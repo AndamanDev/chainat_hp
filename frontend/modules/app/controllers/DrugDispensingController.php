@@ -7,6 +7,7 @@ use frontend\modules\app\models\Pharmacy;
 use Yii;
 use frontend\modules\app\models\TbDrugDispensing;
 use frontend\modules\app\models\TbDrugDispensingSearch;
+use frontend\modules\app\models\TbPharmacy;
 use homer\widgets\tbcolumn\ActionTable;
 use homer\widgets\tbcolumn\ColumnData;
 use yii\data\ActiveDataProvider;
@@ -343,7 +344,10 @@ class DrugDispensingController extends Controller
                 ])
                 ->from('tb_drug_dispensing')
                 ->leftJoin('tb_dispensing_status', 'tb_dispensing_status.dispensing_status_id = tb_drug_dispensing.dispensing_status_id')
-                ->where(['tb_drug_dispensing.dispensing_status_id' => 1])
+                ->where([
+                    'tb_drug_dispensing.dispensing_status_id' => 1,
+                    'tb_drug_dispensing.pharmacy_drug_id' => Yii::$app->user->identity->profile->pharmacy_id
+                ])
                 ->orderBy('tb_drug_dispensing.dispensing_id DESC');
 
             $dataProvider = new ActiveDataProvider([
@@ -660,7 +664,10 @@ class DrugDispensingController extends Controller
                 ])
                 ->from('tb_drug_dispensing')
                 ->leftJoin('tb_dispensing_status', 'tb_dispensing_status.dispensing_status_id = tb_drug_dispensing.dispensing_status_id')
-                ->where(['tb_drug_dispensing.dispensing_status_id' => [2, 3]])
+                ->where([
+                    'tb_drug_dispensing.dispensing_status_id' => [2, 3],
+                    'tb_drug_dispensing.pharmacy_drug_id' => Yii::$app->user->identity->profile->pharmacy_id
+                ])
                 ->orderBy('tb_drug_dispensing.dispensing_id DESC');
 
             $dataProvider = new ActiveDataProvider([
@@ -828,6 +835,19 @@ class DrugDispensingController extends Controller
         $query = [];
         if ($response->isOk) {
             $query = $response->data['data'];
+        }
+
+        if(is_array($query)) {
+            foreach ($query as $key => $row) {
+                $model = TbPharmacy::findOne(['pharmacy_name' => $row['pharmacy_drug_name']]);
+                if(empty($model)){
+                    $model = new TbPharmacy();
+                }
+                $model->pharmacy_id = $row['pharmacy_drug_id'];
+                $model->pharmacy_name = $row['pharmacy_drug_name'];
+                $model->pharmacy_address = $row['pharmacy_drug_address'];
+                $model->save();
+            }
         }
 
         $dataProvider = new ArrayDataProvider([

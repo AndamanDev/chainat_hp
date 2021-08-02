@@ -14,6 +14,8 @@ use dektrium\user\helpers\Timezone;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use trntv\filekit\widget\Upload;
+use kartik\widgets\Select2;
+
 /**
  * @var yii\web\View $this
  * @var yii\widgets\ActiveForm $form
@@ -49,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]); ?>
 
                 <?= $form->field($model, 'avatar')->widget(Upload::classname(), [
-                    'url'=>['file-upload'],
+                    'url' => ['file-upload'],
                 ]) ?>
 
                 <?= $form->field($model, 'name') ?>
@@ -75,6 +77,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     ->hint(Html::a(Yii::t('user', 'Change your avatar at Gravatar.com'), 'http://gravatar.com')) ?>
 
                 <?= $form->field($model, 'bio')->textarea() ?>
+
+                <?= $form->field($model, 'pharmacy_id')->widget(Select2::classname(), [
+                    'data' => ArrayHelper::map((new \yii\db\Query())
+                        ->select(['tb_pharmacy.*'])
+                        ->from('tb_pharmacy')
+                        ->all(), 'pharmacy_id', 'pharmacy_name'),
+                    'options' => ['placeholder' => 'เลือกชื่อร้านขายยา...'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                    'theme' => Select2::THEME_BOOTSTRAP,
+                ]) ?>
 
                 <div class="form-group">
                     <div class="col-lg-offset-3 col-lg-9">

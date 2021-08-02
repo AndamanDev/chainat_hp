@@ -15,6 +15,7 @@ class Profile extends BaseProfile
     {
         $rules = parent::rules();
         $rules[] = [['avatar','avatar_path','avatar_base_url'], 'safe'];
+        $rules[] =[['pharmacy_id'], 'integer'];
         return $rules;
     }
 
@@ -34,6 +35,7 @@ class Profile extends BaseProfile
     {
         $labels = parent::attributeLabels();
         $labels['avatar'] = 'รูปประจำตัว';
+        $labels['pharmacy_id'] = 'ร้านขายยา';
         return $labels;
     }
 
