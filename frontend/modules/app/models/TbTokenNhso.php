@@ -29,6 +29,7 @@ class TbTokenNhso extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['user_person_id', 'smctoken'], 'required'],
             [['user_person_id', 'createdby'], 'integer'],
             [['crearedat'], 'safe'],
             [['smctoken'], 'string', 'max' => 255],
