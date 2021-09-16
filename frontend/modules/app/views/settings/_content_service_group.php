@@ -55,10 +55,11 @@ use yii\helpers\Url;
             var columns = api.columns().nodes();
             var last=null;
             api.column(1, {page:"current"} ).data().each( function ( group, i ) {
-                var data = api.rows(i).data();
+                var data = api.rows( {page:"current"} ).data()[i]
+                
                 if ( last !== group ) {
                     $(rows).eq( i ).before(
-                        \'<tr class="warning"><td colspan="\'+columns.length+\'">\'+group+\' <a href="/app/settings/update-service-group?id=\'+data[0].servicegroupid+\'" class="btn btn-xs btn-success" role="modal-remote"><i class="fa fa-plus"></i></a> </td></tr>\'
+                        \'<tr class="warning"><td colspan="\'+columns.length+\'">\'+group+\' <a href="/app/settings/update-service-group?id=\'+data.servicegroupid+\'" class="btn btn-xs btn-success" role="modal-remote"><i class="fa fa-plus"></i></a> </td></tr>\'
                     );
                     last = group;
                 }
