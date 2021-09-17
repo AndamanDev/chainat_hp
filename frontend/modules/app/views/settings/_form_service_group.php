@@ -9,6 +9,8 @@ use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use unclead\multipleinput\MultipleInput;
 
+$this->title = 'ตั้งค่ากลุ่มงานบริการ';
+
 $this->registerCss(
     <<<CSS
 .modal-dialog{
@@ -495,10 +497,11 @@ CSS
 </div>
 
 <?php
+/*
 $this->registerJs(
     <<<JS
 //Form Event
-var table = $('#tb-service-group').DataTable();
+//var table = $('#tb-service-group').DataTable();
 var \$form = $('#form-service-group');
 \$form.on('beforeSubmit', function() {
     var data = new FormData($(\$form)[0]);//\$form.serialize();
@@ -513,7 +516,7 @@ var \$form = $('#form-service-group');
         success: function (data) {
             if(data.status == '200'){
                 $('#ajaxCrudModal').modal('hide');//hide modal
-                table.ajax.reload();//reload table
+                //table.ajax.reload();//reload table
                 swal({//alert completed!
                     type: 'success',
                     title: 'บันทึกสำเร็จ!',
@@ -537,4 +540,5 @@ var \$form = $('#form-service-group');
 });
 JS
 );
+*/
 ?>

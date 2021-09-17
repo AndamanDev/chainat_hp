@@ -1467,13 +1467,13 @@ class SettingsController extends \yii\web\Controller
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
-                        if ($flag = $model->save(false)) {
+                        if ($flag = $model->save()) {
                             if (!empty($deletedIDs)) {
                                 TbService::deleteAll(['serviceid' => $deletedIDs]);
                             }
                             foreach ($modelServices as $modelService) {
                                 $modelService->service_groupid = $model['servicegroupid'];
-                                if (!($flag = $modelService->save(false))) {
+                                if (!($flag = $modelService->save())) {
                                     $transaction->rollBack();
                                     break;
                                 }
