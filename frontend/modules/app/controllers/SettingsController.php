@@ -1330,7 +1330,50 @@ class SettingsController extends \yii\web\Controller
                 ];
             }
         } else {
-            throw new MethodNotAllowedHttpException('method not allowed.');
+            if ($model->load($request->post())) {
+                $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
+                $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
+                MultipleModel::loadMultiple($modelServices, $request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelServices) && $valid;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        $model->subservice_status = 1;
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                TbService::deleteAll(['serviceid' => $deletedIDs]);
+                            }
+                            foreach ($modelServices as $modelService) {
+                                $modelService->service_groupid = $model['servicegroupid'];
+                                if (!($flag = $modelService->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            return $this->redirect(['/app/settings/index']);
+                        }
+                    } catch (\Exception $e) {
+                        $transaction->rollBack();
+                    }
+                } else {
+                    return  $this->render('_form_service_group', [
+                        'model' => $model,
+                        'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+                    ]);
+                }
+            } else {
+                return  $this->render('_form_service_group', [
+                    'model' => $model,
+                    'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+                ]);
+            }
         }
     }
 
@@ -1412,7 +1455,49 @@ class SettingsController extends \yii\web\Controller
                 ];
             }
         } else {
-            throw new MethodNotAllowedHttpException('method not allowed.');
+            if ($model->load($request->post())) {
+                $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
+                $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
+                MultipleModel::loadMultiple($modelServices, $request->post());
+                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
+
+                // validate all models
+                $valid = $model->validate();
+                $valid = Model::validateMultiple($modelServices) && $valid;
+                if ($valid) {
+                    $transaction = \Yii::$app->db->beginTransaction();
+                    try {
+                        if ($flag = $model->save(false)) {
+                            if (!empty($deletedIDs)) {
+                                TbService::deleteAll(['serviceid' => $deletedIDs]);
+                            }
+                            foreach ($modelServices as $modelService) {
+                                $modelService->service_groupid = $model['servicegroupid'];
+                                if (!($flag = $modelService->save(false))) {
+                                    $transaction->rollBack();
+                                    break;
+                                }
+                            }
+                        }
+                        if ($flag) {
+                            $transaction->commit();
+                            return $this->refresh();
+                        }
+                    } catch (\Exception $e) {
+                        $transaction->rollBack();
+                    }
+                } else {
+                    return $this->render('_form_service_group', [
+                        'model' => $model,
+                        'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+                    ]);
+                }
+            } else {
+                return $this->render('_form_service_group', [
+                    'model' => $model,
+                    'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+                ]);
+            }
         }
     }
 
@@ -1797,7 +1882,7 @@ class SettingsController extends \yii\web\Controller
             $qattr = $modelQueue->attributeLabels();
             $keys = array_keys($qattr);
             foreach ($keys as $value) {
-                $description[] = '{' . $value . '} : '. ArrayHelper::getValue($qattr, $value);
+                $description[] = '{' . $value . '} : ' . ArrayHelper::getValue($qattr, $value);
             }
 
             if ($request->isGet) {
@@ -1847,7 +1932,7 @@ class SettingsController extends \yii\web\Controller
             $qattr = $modelQueue->attributeLabels();
             $keys = array_keys($qattr);
             foreach ($keys as $value) {
-                $description[] = '{' . $value . '} : '. ArrayHelper::getValue($qattr, $value);
+                $description[] = '{' . $value . '} : ' . ArrayHelper::getValue($qattr, $value);
             }
             if ($request->isGet) {
                 return [
