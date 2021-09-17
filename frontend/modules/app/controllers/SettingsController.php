@@ -1381,7 +1381,7 @@ class SettingsController extends \yii\web\Controller
     {
         $request = Yii::$app->request;
         $model = TbServicegroup::findOne($id);
-        $modelServices = TbService::find()->where(['service_groupid' => $id])->all();
+        $modelServices = $model->tbServices;
 
         if ($request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -1397,7 +1397,7 @@ class SettingsController extends \yii\web\Controller
             } elseif ($model->load($request->post())) {
                 $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
                 $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
-                MultipleModel::loadMultiple($modelServices, $request->post());
+                MultipleModel::loadMultiple($modelServices, $_POST['TbService']);
                 $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
 
                 // validate all models
@@ -1406,13 +1406,13 @@ class SettingsController extends \yii\web\Controller
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
-                        if ($flag = $model->save(false)) {
+                        if ($flag = $model->save()) {
                             if (!empty($deletedIDs)) {
                                 TbService::deleteAll(['serviceid' => $deletedIDs]);
                             }
                             foreach ($modelServices as $modelService) {
                                 $modelService->service_groupid = $model['servicegroupid'];
-                                if (!($flag = $modelService->save(false))) {
+                                if (!($flag = $modelService->save())) {
                                     $transaction->rollBack();
                                     break;
                                 }
