@@ -140,6 +140,24 @@ services:
     networks:
       - backend
 
+  #######################################
+  # PHP: php v7.3
+  #######################################
+  php73:
+    build: ./docker/php73
+    container_name: lemp_php73-fpm
+    restart: always
+    volumes:
+      - .:/var/www/html
+      - ./docker/php73/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./docker/php73/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/logs/php73-fpm:/var/log/php-fpm
+    expose:
+      - "9000"
+      - "22"
+    networks:
+      - backend
+
 networks:
   frontend:
     driver: bridge
