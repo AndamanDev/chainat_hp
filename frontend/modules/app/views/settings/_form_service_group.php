@@ -497,7 +497,6 @@ CSS
 </div>
 
 <?php
-/*
 $this->registerJs(
     <<<JS
 //Form Event
@@ -515,15 +514,18 @@ var \$form = $('#form-service-group');
         contentType: false,
         success: function (data) {
             if(data.status == '200'){
-                $('#ajaxCrudModal').modal('hide');//hide modal
+                // $('#ajaxCrudModal').modal('hide');//hide modal
                 //table.ajax.reload();//reload table
-                swal({//alert completed!
-                    type: 'success',
-                    title: 'บันทึกสำเร็จ!',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                setTimeout(function(){ \$btn.button('reset'); }, 1500);//clear button loading
+                // swal({//alert completed!
+                //     type: 'success',
+                //     title: 'บันทึกสำเร็จ!',
+                //     showConfirmButton: false,
+                //     timer: 1500
+                // });
+                setTimeout(function(){ 
+                    \$btn.button('reset'); 
+                    window.location.reload();
+                }, 1500);//clear button loading
             }else if(data.validate != null){
                 $.each(data.validate, function(key, val) {
                     $(\$form).yiiActiveForm('updateAttribute', key, [val]);
@@ -532,7 +534,8 @@ var \$form = $('#form-service-group');
             \$btn.button('reset');
         },
         error: function(jqXHR, errMsg) {
-            swal('Oops...',errMsg,'error');
+            alert(errMsg)
+            // swal('Oops...',errMsg,'error');
             \$btn.button('reset');
         }
     });
@@ -540,5 +543,4 @@ var \$form = $('#form-service-group');
 });
 JS
 );
-*/
 ?>
