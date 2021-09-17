@@ -1402,7 +1402,7 @@ class SettingsController extends \yii\web\Controller
 
                 // validate all models
                 $valid = $model->validate();
-                $valid = Model::validateMultiple($modelServices) && $valid;
+                $valid = MultipleModel::validateMultiple($modelServices) && $valid;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
@@ -1463,7 +1463,7 @@ class SettingsController extends \yii\web\Controller
 
                 // validate all models
                 $valid = $model->validate();
-                $valid = Model::validateMultiple($modelServices) && $valid;
+                $valid = MultipleModel::validateMultiple($modelServices) && $valid;
                 if ($valid) {
                     $transaction = \Yii::$app->db->beginTransaction();
                     try {
