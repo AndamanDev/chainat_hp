@@ -89,7 +89,7 @@ use yii\helpers\Url;
             ["data" => "show_on_kiosk","className" => "dt-body-left dt-head-nowrap","title" => "แสดงบน kiosk"],
             ["data" => "show_on_mobile","className" => "dt-body-left dt-head-nowrap","title" => "แสดงบน mobile"],
             ["data" => "service_status","className" => "dt-body-left dt-head-nowrap","title" => "สถานะคิว"],
-            ["data" => "actions","className" => "dt-center dt-nowrap","orderable" => false,"title" => "ดำเนินการ"]
+            ["data" => "actions","className" => "dt-center dt-nowrap","orderable" => false,"title" => "ดำเนินการ", 'responsivePriority' => 1]
         ],
     ],
     'clientEvents' => [
