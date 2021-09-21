@@ -42,7 +42,7 @@ use yii\helpers\Url;
         ],
         "dom" => "<'pull-left'f><'pull-right'l>t<'pull-left'i>p",
         "language" => array_merge(Yii::$app->params['dtLanguage'],[
-            "search" => "_INPUT_ " . Html::a(Icon::show('plus').' เพิ่ม-ลบ รายการ', ['/app/settings/create-service-group'],['class' => 'btn btn-success']),
+            "search" => "_INPUT_ " . Html::a(Icon::show('plus').' เพิ่มกลุ่มแผนก', ['/app/settings/create-service-group'],['class' => 'btn btn-success mr-2' , 'role' => 'modal-remote','style' => 'margin-right:5px;']) . Html::a(Icon::show('plus').' เพิ่มแผนก', ['/app/settings/create-service'],['class' => 'btn btn-success' , 'role' => 'modal-remote']),
             "searchPlaceholder" => "ค้นหา..."
         ]),
         "pageLength" => 50,
@@ -59,7 +59,7 @@ use yii\helpers\Url;
                 
                 if ( last !== group ) {
                     $(rows).eq( i ).before(
-                        \'<tr class="warning"><td colspan="\'+columns.length+\'">\'+group+\' <a href="/app/settings/update-service-group?id=\'+data.servicegroupid+\'" class="btn btn-xs btn-success" ><i class="fa fa-plus"></i></a> </td></tr>\'
+                        \'<tr class="warning"><td colspan="\'+columns.length+\'">\'+group+\' <a href="/app/settings/update-service-group?id=\'+data.servicegroupid+ \'" class="btn btn-xs btn-success" role="modal-remote"> <i class="fa fa-edit"></i></a> </td></tr>\'
                     );
                     last = group;
                 }

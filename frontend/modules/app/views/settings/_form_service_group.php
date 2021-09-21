@@ -497,6 +497,48 @@ CSS
 </div>
 
 <?php
+/*
+$this->registerJs(
+    <<<JS
+    var \$form = $('#form-service-group');
+    \$form.on('beforeSubmit', function() {
+    var data = new FormData($(\$form)[0]);//\$form.serialize();
+    var \$btn = $('button[type="submit"]').button('loading');//loading btn
+    \$.ajax({
+        url: \$form.attr('action'),
+        type: 'POST',
+        data: data,
+        async: false,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            if(data.status == '200'){
+                AppNotify.SaveCompleted();
+                // setTimeout(function(){ 
+                //     \$btn.button('reset'); 
+                //     window.location.reload();
+                // }, 1500);//clear button loading
+            }else if(data.validate != null){
+                $.each(data.validate, function(key, val) {
+                    $(\$form).yiiActiveForm('updateAttribute', key, [val]);
+                });
+            }
+            \$btn.button('reset');
+        },
+        error: function(jqXHR, errMsg) {
+            alert(errMsg)
+            \$btn.button('reset');
+        }
+    });
+    return false; // prevent default submit
+});
+  
+JS
+);
+*/
+?>
+<? /*
+<?php
 $this->registerJs(
     <<<JS
 //Form Event
@@ -544,3 +586,4 @@ var \$form = $('#form-service-group');
 JS
 );
 ?>
+*/?>

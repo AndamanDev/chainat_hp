@@ -416,7 +416,7 @@ class SettingsController extends \yii\web\Controller
                                 return Url::to(['/app/settings/create-service-tslot', 'id' => $model['serviceid']]);
                             }
                             if ($action == 'update') {
-                                return Url::to(['/app/settings/update-service-group', 'id' => $key]);
+                                return Url::to(['/app/settings/update-service', 'id' => $model['serviceid']]);
                             }
                             if ($action == 'delete') {
                                 return Url::to(['/app/settings/delete-service-group', 'id' => $key, 'serviceid' => $model['serviceid']]);
@@ -1249,7 +1249,7 @@ class SettingsController extends \yii\web\Controller
             throw new MethodNotAllowedHttpException('method not allowed.');
         }
     }
-
+    /*
     public function actionCreateServiceGroup()
     {
         $request = Yii::$app->request;
@@ -1376,130 +1376,260 @@ class SettingsController extends \yii\web\Controller
             }
         }
     }
+*/
 
-    public function actionUpdateServiceGroup($id)
-    {
-        $request = Yii::$app->request;
-        $model = TbServicegroup::findOne($id);
-        $modelServices = $model->tbServices;
+    // public function actionCreateServiceGroup()
+    // {
+    //     $request = Yii::$app->request;
+    //     $model = new TbServicegroup();
+    //     $modelServices = [new TbService()];
 
-        if ($request->isAjax) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            if ($request->isGet) {
-                return [
-                    'title'     => "จัดการกลุ่มบริการ",
-                    'content'   => $this->renderAjax('_form_service_group', [
-                        'model' => $model,
-                        'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
-                    ]),
-                    'footer' =>  ''
-                ];
-            } elseif ($model->load($request->post())) {
-                $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
-                $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
-                MultipleModel::loadMultiple($modelServices, $_POST['TbService']);
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
+    //     if ($request->isAjax) {
+    //         Yii::$app->response->format = Response::FORMAT_JSON;
+    //         if ($request->isGet) {
+    //             $model->servicestatus_default = 1;
+    //             return [
+    //                 'title'     => "จัดการกลุ่มบริการ",
+    //                 'content'   => $this->renderAjax('_form_service_group', [
+    //                     'model' => $model,
+    //                     'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                 ]),
+    //                 'footer' =>  ''
+    //             ];
+    //         } elseif ($model->load($request->post())) {
+    //             $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
+    //             $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
+    //             MultipleModel::loadMultiple($modelServices, $request->post());
+    //             $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
 
-                // validate all models
-                $valid = $model->validate();
-                $valid = MultipleModel::validateMultiple($modelServices) && $valid;
-                if ($valid) {
-                    $transaction = \Yii::$app->db->beginTransaction();
-                    try {
-                        if ($flag = $model->save()) {
-                            if (!empty($deletedIDs)) {
-                                TbService::deleteAll(['serviceid' => $deletedIDs]);
-                            }
-                            foreach ($modelServices as $modelService) {
-                                $modelService->service_groupid = $model['servicegroupid'];
-                                if (!($flag = $modelService->save())) {
-                                    $transaction->rollBack();
-                                    break;
-                                }
-                            }
-                        }
-                        if ($flag) {
-                            $transaction->commit();
-                            return [
-                                'title' => "จัดการกลุ่มบริการ",
-                                'content' => '<span class="text-success">บันทึกสำเร็จ!</span>',
-                                'footer' => Html::button('Close', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]),
-                                'status' => '200'
-                            ];
-                        }
-                    } catch (\Exception $e) {
-                        $transaction->rollBack();
-                    }
-                } else {
-                    return [
-                        'title' => "จัดการกลุ่มบริการ",
-                        'content'   => $this->renderAjax('_form_service_group', [
-                            'model' => $model,
-                            'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
-                        ]),
-                        'footer' => '',
-                        'validate' => ArrayHelper::merge(ActiveForm::validateMultiple($modelServices), ActiveForm::validate($model)),
-                        'status' => 'error'
-                    ];
-                }
-            } else {
-                return [
-                    'title' => "จัดการกลุ่มบริการ",
-                    'content'   => $this->renderAjax('_form_service_group', [
-                        'model' => $model,
-                        'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
-                    ]),
-                    'footer' => '',
-                    'validate' => ArrayHelper::merge(ActiveForm::validateMultiple($modelServices), ActiveForm::validate($model)),
-                    'status' => 'error'
-                ];
-            }
-        } else {
-            if ($model->load($request->post())) {
-                $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
-                $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
-                MultipleModel::loadMultiple($modelServices, $request->post());
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
+    //             // validate all models
+    //             $valid = $model->validate();
+    //             $valid = Model::validateMultiple($modelServices) && $valid;
+    //             if ($valid) {
+    //                 $transaction = \Yii::$app->db->beginTransaction();
+    //                 try {
+    //                     $model->subservice_status = 1;
+    //                     if ($flag = $model->save(false)) {
+    //                         if (!empty($deletedIDs)) {
+    //                             TbService::deleteAll(['serviceid' => $deletedIDs]);
+    //                         }
+    //                         foreach ($modelServices as $modelService) {
+    //                             $modelService->service_groupid = $model['servicegroupid'];
+    //                             if (!($flag = $modelService->save(false))) {
+    //                                 $transaction->rollBack();
+    //                                 break;
+    //                             }
+    //                         }
+    //                     }
+    //                     if ($flag) {
+    //                         $transaction->commit();
+    //                         return [
+    //                             'title' => "จัดการกลุ่มบริการ",
+    //                             'content' => '<span class="text-success">บันทึกสำเร็จ!</span>',
+    //                             'footer' => Html::button('Close', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]),
+    //                             'status' => '200'
+    //                         ];
+    //                     }
+    //                 } catch (\Exception $e) {
+    //                     $transaction->rollBack();
+    //                     throw $e;
+    //                 }
+    //             } else {
+    //                 return [
+    //                     'title' => "จัดการกลุ่มบริการ",
+    //                     'content'   => $this->renderAjax('_form_service_group', [
+    //                         'model' => $model,
+    //                         'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                     ]),
+    //                     'footer' => '',
+    //                     'validate' => ArrayHelper::merge(ActiveForm::validateMultiple($modelServices), ActiveForm::validate($model)),
+    //                     'status' => 'error'
+    //                 ];
+    //             }
+    //         } else {
+    //             return [
+    //                 'title' => "จัดการกลุ่มบริการ",
+    //                 'content'   => $this->renderAjax('_form_service_group', [
+    //                     'model' => $model,
+    //                     'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                 ]),
+    //                 'footer' => '',
+    //                 'validate' => ArrayHelper::merge(ActiveForm::validateMultiple($modelServices), ActiveForm::validate($model)),
+    //                 'status' => 'error'
+    //             ];
+    //         }
+    //     } else {
+    //         if ($model->load($request->post())) {
+    //             $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
+    //             $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
+    //             MultipleModel::loadMultiple($modelServices, $request->post());
+    //             $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
 
-                // validate all models
-                $valid = $model->validate();
-                $valid = MultipleModel::validateMultiple($modelServices) && $valid;
-                if ($valid) {
-                    $transaction = \Yii::$app->db->beginTransaction();
-                    try {
-                        if ($flag = $model->save()) {
-                            if (!empty($deletedIDs)) {
-                                TbService::deleteAll(['serviceid' => $deletedIDs]);
-                            }
-                            foreach ($modelServices as $modelService) {
-                                $modelService->service_groupid = $model['servicegroupid'];
-                                if (!($flag = $modelService->save())) {
-                                    $transaction->rollBack();
-                                    break;
-                                }
-                            }
-                        }
-                        if ($flag) {
-                            $transaction->commit();
-                            return $this->refresh();
-                        }
-                    } catch (\Exception $e) {
-                        $transaction->rollBack();
-                    }
-                } else {
-                    return $this->render('_form_service_group', [
-                        'model' => $model,
-                        'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
-                    ]);
-                }
-            } else {
-                return $this->render('_form_service_group', [
-                    'model' => $model,
-                    'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
-                ]);
-            }
-        }
-    }
+    //             // validate all models
+    //             $valid = $model->validate();
+    //             $valid = Model::validateMultiple($modelServices) && $valid;
+    //             if ($valid) {
+    //                 $transaction = \Yii::$app->db->beginTransaction();
+    //                 try {
+    //                     $model->subservice_status = 1;
+    //                     if ($flag = $model->save(false)) {
+    //                         if (!empty($deletedIDs)) {
+    //                             TbService::deleteAll(['serviceid' => $deletedIDs]);
+    //                         }
+    //                         foreach ($modelServices as $modelService) {
+    //                             $modelService->service_groupid = $model['servicegroupid'];
+    //                             if (!($flag = $modelService->save(false))) {
+    //                                 $transaction->rollBack();
+    //                                 break;
+    //                             }
+    //                         }
+    //                     }
+    //                     if ($flag) {
+    //                         $transaction->commit();
+    //                         return $this->redirect(['/app/settings/update-service-group', 'id' => $model->servicegroupid]);
+    //                     }
+    //                 } catch (\Exception $e) {
+    //                     $transaction->rollBack();
+    //                     throw $e;
+    //                 }
+    //             } else {
+    //                 return  $this->render('_form_service_group', [
+    //                     'model' => $model,
+    //                     'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                 ]);
+    //             }
+    //         } else {
+    //             return  $this->render('_form_service_group', [
+    //                 'model' => $model,
+    //                 'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //             ]);
+    //         }
+    //     }
+    // }
+
+    // public function actionUpdateServiceGroup($id)
+    // {
+    //     $request = Yii::$app->request;
+    //     $model = TbServicegroup::findOne($id);
+    //     $modelServices = $model->tbServices;
+
+    //     if ($request->isAjax) {
+    //         Yii::$app->response->format = Response::FORMAT_JSON;
+    //         if ($request->isGet) {
+    //             return [
+    //                 'title'     => "จัดการกลุ่มบริการ",
+    //                 'content'   => $this->renderAjax('_form_service_group', [
+    //                     'model' => $model,
+    //                     'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                 ]),
+    //                 'footer' =>  ''
+    //             ];
+    //         } elseif ($model->load($request->post())) {
+    //             $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
+    //             $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
+    //             MultipleModel::loadMultiple($modelServices, $_POST['TbService']);
+    //             $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
+
+    //             // validate all models
+    //             $valid = $model->validate();
+    //             $valid = MultipleModel::validateMultiple($modelServices) && $valid;
+    //             if ($valid) {
+    //                 $transaction = \Yii::$app->db->beginTransaction();
+    //                 try {
+    //                     if ($flag = $model->save()) {
+    //                         if (!empty($deletedIDs)) {
+    //                             TbService::deleteAll(['serviceid' => $deletedIDs]);
+    //                         }
+    //                         foreach ($modelServices as $modelService) {
+    //                             $modelService->service_groupid = $model['servicegroupid'];
+    //                             if (!($flag = $modelService->save())) {
+    //                                 $transaction->rollBack();
+    //                                 break;
+    //                             }
+    //                         }
+    //                     }
+    //                     if ($flag) {
+    //                         $transaction->commit();
+    //                         return [
+    //                             'title' => "จัดการกลุ่มบริการ",
+    //                             'content' => '<span class="text-success">บันทึกสำเร็จ!</span>',
+    //                             'footer' => Html::button('Close', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]),
+    //                             'status' => '200'
+    //                         ];
+    //                     }
+    //                 } catch (\Exception $e) {
+    //                     $transaction->rollBack();
+    //                 }
+    //             } else {
+    //                 return [
+    //                     'title' => "จัดการกลุ่มบริการ",
+    //                     'content'   => $this->renderAjax('_form_service_group', [
+    //                         'model' => $model,
+    //                         'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                     ]),
+    //                     'footer' => '',
+    //                     'validate' => ArrayHelper::merge(ActiveForm::validateMultiple($modelServices), ActiveForm::validate($model)),
+    //                     'status' => 'error'
+    //                 ];
+    //             }
+    //         } else {
+    //             return [
+    //                 'title' => "จัดการกลุ่มบริการ",
+    //                 'content'   => $this->renderAjax('_form_service_group', [
+    //                     'model' => $model,
+    //                     'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                 ]),
+    //                 'footer' => '',
+    //                 'validate' => ArrayHelper::merge(ActiveForm::validateMultiple($modelServices), ActiveForm::validate($model)),
+    //                 'status' => 'error'
+    //             ];
+    //         }
+    //     } else {
+    //         if ($model->load($request->post())) {
+    //             $oldIDs = ArrayHelper::map($modelServices, 'serviceid', 'serviceid');
+    //             $modelServices = MultipleModel::createMultiple(TbService::classname(), $modelServices, 'serviceid');
+    //             MultipleModel::loadMultiple($modelServices, $request->post());
+    //             $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelServices, 'serviceid', 'serviceid')));
+
+    //             // validate all models
+    //             $valid = $model->validate();
+    //             $valid = MultipleModel::validateMultiple($modelServices) && $valid;
+    //             if ($valid) {
+    //                 $transaction = \Yii::$app->db->beginTransaction();
+    //                 try {
+    //                     if ($flag = $model->save()) {
+    //                         if (!empty($deletedIDs)) {
+    //                             TbService::deleteAll(['serviceid' => $deletedIDs]);
+    //                         }
+    //                         foreach ($modelServices as $modelService) {
+    //                             $modelService->service_groupid = $model['servicegroupid'];
+    //                             if (!($flag = $modelService->save())) {
+    //                                 $transaction->rollBack();
+    //                                 break;
+    //                             }
+    //                         }
+    //                     }
+    //                     if ($flag) {
+    //                         $transaction->commit();
+    //                         return $this->refresh();
+    //                     }
+    //                 } catch (\Exception $e) {
+    //                     $transaction->rollBack();
+    //                 }
+    //             } else {
+    //                 return $this->render('_form_service_group', [
+    //                     'model' => $model,
+    //                     'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //                 ]);
+    //             }
+    //         } else {
+    //             return $this->render('_form_service_group', [
+    //                 'model' => $model,
+    //                 'modelServices' => (empty($modelServices)) ? [new TbService()] : $modelServices,
+    //             ]);
+    //         }
+    //     }
+    // }
 
     public function actionCreateSound()
     {
@@ -2921,5 +3051,255 @@ class SettingsController extends \yii\web\Controller
 
         TbCallingConfig::updateAll(['notice_queue_status' => 0], ['<>', 'calling_id', $request->post('id')]);  //update ข้อมูใน table ทั้งหมด
         return Json::encode($model);
+    }
+
+    /**
+     * Creates a new TbService model.
+     * For ajax request will return json object
+     * and for non-ajax request if creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreateService()
+    {
+        $request = Yii::$app->request;
+        $model = new TbService();
+
+        if ($request->isAjax) {
+            /*
+            *   Process for ajax request
+            */
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($request->isGet) {
+                return [
+                    'title' => "เพิ่มรายการแผนก",
+                    'content' => $this->renderAjax('_form_service', [
+                        'model' => $model,
+                    ]),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            } else if ($model->load($request->post()) && $model->save()) {
+                return [
+                    // 'forceReload' => '#crud-datatable-pjax',
+                    'title' => "เพิ่มรายการแผนก",
+                    'content' => '<span class="text-success">บันทึกรายการสำเร็จ</span>',
+                    'status' => '200',
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::a('เพิ่มรายการ', ['create'], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
+
+                ];
+            } else {
+                return [
+                    'title' => "เพิ่มรายการแผนก",
+                    'content' => $this->renderAjax('_form_service', [
+                        'model' => $model,
+                    ]),
+                    'validate' => ActiveForm::validate($model),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default pull-left', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            }
+        } else {
+            /*
+            *   Process for non-ajax request
+            */
+            if ($model->load($request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->serviceid]);
+            } else {
+                return $this->render('_form_service', [
+                    'model' => $model,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Updates an existing TbService model.
+     * For ajax request will return json object
+     * and for non-ajax request if update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionUpdateService($id)
+    {
+        $request = Yii::$app->request;
+        $model = TbService::findOne($id);
+
+        if ($request->isAjax) {
+            /*
+            *   Process for ajax request
+            */
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($request->isGet) {
+                return [
+                    'title' => "แก้ไขรายการแผนก",
+                    'content' => $this->renderAjax('_form_service', [
+                        'model' => $model,
+                    ]),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            } else if ($model->load($request->post()) && $model->save()) {
+                return [
+                    // 'forceReload' => '#crud-datatable-pjax',
+                    'title' => "แก้ไขรายการแผนก",
+                    'content' => '<span class="text-success">บันทึกรายการสำเร็จ</span>',
+                    'status' => '200',
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::a('เพิ่มรายการ', ['create'], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
+
+                ];
+            } else {
+                return [
+                    'title' => "แก้ไขรายการแผนก",
+                    'content' => $this->renderAjax('_form_service', [
+                        'model' => $model,
+                    ]),
+                    'validate' => ActiveForm::validate($model),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default pull-left', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            }
+        } else {
+            /*
+            *   Process for non-ajax request
+            */
+            if ($model->load($request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->serviceid]);
+            } else {
+                return $this->render('_form_service', [
+                    'model' => $model,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Creates a new TbServicegroup model.
+     * For ajax request will return json object
+     * and for non-ajax request if creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreateServiceGroup()
+    {
+        $request = Yii::$app->request;
+        $model = new TbServicegroup();
+
+        if ($request->isAjax) {
+            /*
+            *   Process for ajax request
+            */
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($request->isGet) {
+                return [
+                    'title' => "บันทึกรายการกลุ่มแผนก",
+                    'content' => $this->renderAjax('_form_servicegroup', [
+                        'model' => $model,
+                    ]),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            } else if ($model->load($request->post()) && $model->save()) {
+                return [
+                    // 'forceReload' => '#crud-datatable-pjax',
+                    'title' => "บันทึกรายการกลุ่มแผนก",
+                    'content' => '<span class="text-success">บันทึกรายการสำเร็จ</span>',
+                    'status' => '200',
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::a('เพิ่มรายการ', ['create'], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
+
+                ];
+            } else {
+                return [
+                    'title' => "บันทึกรายการกลุ่มแผนก",
+                    'content' => $this->renderAjax('_form_servicegroup', [
+                        'model' => $model,
+                    ]),
+                    'validate' => ActiveForm::validate($model),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default pull-left', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            }
+        } else {
+            /*
+            *   Process for non-ajax request
+            */
+            if ($model->load($request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->servicegroupid]);
+            } else {
+                return $this->render('_form_servicegroup', [
+                    'model' => $model,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Updates an existing TbServicegroup model.
+     * For ajax request will return json object
+     * and for non-ajax request if update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionUpdateServiceGroup($id)
+    {
+        $request = Yii::$app->request;
+        $model = TbServicegroup::findOne($id);
+
+        if ($request->isAjax) {
+            /*
+            *   Process for ajax request
+            */
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            if ($request->isGet) {
+                return [
+                    'title' => "แก้ไขรายการกลุ่มแผนก",
+                    'content' => $this->renderAjax('_form_servicegroup', [
+                        'model' => $model,
+                    ]),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            } else if ($model->load($request->post()) && $model->save()) {
+                return [
+                    // 'forceReload' => '#crud-datatable-pjax',
+                    'title' => "แก้ไขรายการกลุ่มแผนก",
+                    'content' => '<span class="text-success">บันทึกรายการสำเร็จ</span>',
+                    'status' => '200',
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => "modal"]) .
+                    //     Html::a('เพิ่มรายการ', ['create'], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
+
+                ];
+            } else {
+                return [
+                    'title' => "แก้ไขรายการกลุ่มแผนก",
+                    'content' => $this->renderAjax('_form_servicegroup', [
+                        'model' => $model,
+                    ]),
+                    'validate' => ActiveForm::validate($model),
+                    // 'footer' => Html::button('ยกเลิก', ['class' => 'btn btn-default pull-left', 'data-dismiss' => "modal"]) .
+                    //     Html::button('บันทึก', ['class' => 'btn btn-primary', 'type' => "submit"])
+
+                ];
+            }
+        } else {
+            /*
+            *   Process for non-ajax request
+            */
+            if ($model->load($request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->servicegroupid]);
+            } else {
+                return $this->render('_form_servicegroup', [
+                    'model' => $model,
+                ]);
+            }
+        }
     }
 }
