@@ -76,6 +76,7 @@ class SettingsController extends \yii\web\Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete-service-group' => ['POST'],
+                    'delete-service' => ['POST'],
                     'delete-sound' => ['POST'],
                     'delete-display' => ['POST'],
                     'delete-counter' => ['POST'],
@@ -119,13 +120,30 @@ class SettingsController extends \yii\web\Controller
     public function actionDeleteServiceGroup($id, $serviceid = null)
     {
         $request = Yii::$app->request;
+        TbServicegroup::findOne($id)->delete();
         if ($serviceid != null) {
             TbService::findOne($serviceid)->delete();
         }
-        if (TbService::find()->where(['service_groupid' => $id])->count() == 0) {
-            TbServicegroup::findOne($id)->delete();
-        }
+        //TbService::deleteAll(['service_groupid' => $id]);
 
+        if ($request->isAjax) {
+            /*
+            *   Process for ajax request
+            */
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['forceClose' => true];
+        } else {
+            /*
+            *   Process for non-ajax request
+            */
+            return $this->redirect(['index']);
+        }
+    }
+
+    public function actionDeleteService($id)
+    {
+        $request = Yii::$app->request;
+        TbService::findOne($id)->delete();
         if ($request->isAjax) {
             /*
             *   Process for ajax request
@@ -419,7 +437,7 @@ class SettingsController extends \yii\web\Controller
                                 return Url::to(['/app/settings/update-service', 'id' => $model['serviceid']]);
                             }
                             if ($action == 'delete') {
-                                return Url::to(['/app/settings/delete-service-group', 'id' => $key, 'serviceid' => $model['serviceid']]);
+                                return Url::to(['/app/settings/delete-service', 'id' => $model['serviceid']]);
                             }
                         },
                         'buttons' => [

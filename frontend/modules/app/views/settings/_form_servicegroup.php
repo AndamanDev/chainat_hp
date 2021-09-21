@@ -197,6 +197,9 @@ CSS
             <div class="form-group">
                 <div class="col-sm-12">
                     <?= Html::button(Icon::show('close') . 'ยกเลิก', ['class' => 'btn btn-default', 'data-dismiss' => 'modal']); ?>
+                    <?php if (!$model->isNewRecord) { ?>
+                        <?= Html::a('<i class="fa fa-trash" aria-hidden="true"></i> ลบ', ['/app/settings/delete-service-group', 'id' => $model['servicegroupid']], ['class' => 'btn btn-danger btn-delete']) ?>
+                    <?php } ?>
                     <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-primary']); ?>
                 </div>
             </div>
@@ -247,6 +250,47 @@ var \$form = $('#form-service-group');
     });
     return false; // prevent default submit
 });
+
+$('a.btn-delete').on('click', function(e){
+    e.preventDefault();
+    var url = $(this).attr('href')
+    swal({
+        title: "ยืนยัน?",
+        text: "",
+        type: "question",
+        showCancelButton: true,
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
+        allowOutsideClick: false,
+        showLoaderOnConfirm: true,
+        preConfirm: function() {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                method: "POST",
+                url: url,
+                dataType: "json",
+                success: function(res) {
+                    $('#ajaxCrudModal').modal('hide');//hide modal
+                    table.ajax.reload();//reload table
+                    resolve()
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    swal('Oops...',errorThrown,'error');
+                },
+            });
+        });
+        },
+    }).then((result) => {
+        if (result.value) {
+            swal({//alert completed!
+                type: 'success',
+                title: 'บันทึกสำเร็จ!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
+})
 JS
 );
 ?>
