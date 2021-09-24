@@ -2843,24 +2843,28 @@ class SettingsController extends \yii\web\Controller
                 $body = $request->post('TbService');
                 $schedules = $body['schedules'];
                 $oldIDs = ArrayHelper::map(TbServiceTslot::find()->where(['serviceid' => $id])->asArray()->all(), 'tslotid', 'tslotid');
-                foreach ($schedules as $schedule) {
-                    $slot = new TbServiceTslot();
-                    if (!empty($schedule['tslotid'])) {
-                        $slot =  TbServiceTslot::findOne($schedule['tslotid']);
-                    }
+                if (is_array($schedules)) {
+                    foreach ($schedules as $schedule) {
+                        $slot = new TbServiceTslot();
+                        if (!empty($schedule['tslotid'])) {
+                            $slot =  TbServiceTslot::findOne($schedule['tslotid']);
+                        }
 
-                    $slot->serviceid = $id;
-                    $slot->t_slot_begin = $schedule['t_slot_begin'];
-                    $slot->t_slot_end = $schedule['t_slot_end'];
-                    $slot->q_limit = $schedule['q_limit'];
-                    $slot->q_limitqty = $schedule['q_limitqty'];
-                    if (!$slot->save()) {
-                        throw new HttpException(422, $slot->errors);
+                        $slot->serviceid = $id;
+                        $slot->t_slot_begin = $schedule['t_slot_begin'];
+                        $slot->t_slot_end = $schedule['t_slot_end'];
+                        $slot->q_limit = $schedule['q_limit'];
+                        $slot->q_limitqty = $schedule['q_limitqty'];
+                        if (!$slot->save()) {
+                            throw new HttpException(422, $slot->errors);
+                        }
                     }
-                }
-                $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($schedules, 'tslotid', 'tslotid')));
-                if (!empty($deletedIDs)) {
-                    TbServiceTslot::deleteAll(['tslotid' => $deletedIDs]);
+                    $deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($schedules, 'tslotid', 'tslotid')));
+                    if (!empty($deletedIDs)) {
+                        TbServiceTslot::deleteAll(['tslotid' => $deletedIDs]);
+                    }
+                } else {
+                    TbServiceTslot::deleteAll(['serviceid' => $id]);
                 }
                 return [
                     'title' => "บันทึกรายการ",
