@@ -797,7 +797,7 @@ class KioskController extends \yii\web\Controller
         ->andWhere('DATE(q_timestp) = CURRENT_DATE')
         ->count();
       // $q_balance = $slot['q_limitqty'] - $count; // 5 - 5 = 0
-      if (($slot['q_limitqty'] == $count)  &&  $slot['q_limit'] == 1) { //จำนวน คิว limit
+      if (($slot['q_limitqty'] == $count || $count > $slot['q_limitqty'])  &&  $slot['q_limit'] == 1) { //จำนวน คิว limit
         throw new HttpException(400, 'คิวเต็ม!');
       }
     }
