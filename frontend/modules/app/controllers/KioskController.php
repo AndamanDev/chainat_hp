@@ -768,7 +768,43 @@ class KioskController extends \yii\web\Controller
       $maininscl_name = ArrayHelper::getValue($appoint, 'appoint_right', null); //ชื่อสิทธิ์
     }
 
+    $counttslot = (new \yii\db\Query()) //หา slot เวลาที่ต้องสร้างคิว
+      ->select([
+        'tb_service_tslot.*',
+      ])
+      ->from('tb_service_tslot')
+      ->where(['tb_service_tslot.serviceid' => $serviceid])
+      ->count();
+
     $tslotid = $this->getSlot($serviceid);
+
+    $slot = (new \yii\db\Query()) //หา slot เวลาที่ต้องสร้างคิว
+      ->select([
+        'tb_service_tslot.*',
+      ])
+      ->from('tb_service_tslot')
+      ->where(['tb_service_tslot.serviceid' => $serviceid])
+      ->andWhere('CURRENT_TIME >= tb_service_tslot.t_slot_begin')
+      ->andWhere('CURRENT_TIME <= tb_service_tslot.t_slot_end')->one();
+
+    if ($slot) {
+      $count = (new \yii\db\Query())
+        ->from('tb_quequ')
+        ->where([
+          'tb_quequ.serviceid' => $serviceid,
+          'tb_quequ.tslotid' => $slot['tslotid'],
+        ])
+        ->andWhere('DATE(q_timestp) = CURRENT_DATE')
+        ->count();
+      $q_balance = $slot['q_limitqty'] - $count;
+      if ($q_balance == 0 && $count > 0) { //จำนวน คิว limit
+        throw new HttpException(400, 'คิวเต็ม!');
+      }
+    }
+
+    if ($counttslot > 0 && $tslotid == null) {
+      throw new HttpException(400, 'ไม่ได้อยู่ในช่วงเวลาให้บริการ!');
+    }
 
     $db = Yii::$app->db;
     $transaction = $db->beginTransaction();
