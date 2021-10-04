@@ -628,7 +628,7 @@ class DisplayController extends \yii\web\Controller
             $model = TbDisplayConfig::findOne($config['display_ids']);
             $services = !empty($model['service_id']) ? explode(",", $model['service_id']) : [];
             $counters = !empty($model['counterservice_id']) ? explode(",", $model['counterservice_id']) : [];
-            $servicePrefixs = ArrayHelper::map(TbService::find()->where(['serviceid' => $services])->orderBy(['service_prefix' => SORT_ASC])->all(), 'serviceid', 'service_prefix');
+            $servicePrefixs = ArrayHelper::map(TbService::find()->where(['serviceid' => $services])->orderBy(['service_prefix' => SORT_ASC])->groupBy('service_prefix')->all(), 'serviceid', 'service_prefix');
 
             $map = ArrayHelper::map($query, 'serviceid', 'service_prefix');
             $caller_ids = ArrayHelper::getColumn($query, 'caller_ids');
