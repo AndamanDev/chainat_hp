@@ -387,6 +387,7 @@ $this->registerJs(
     <<<JS
 socket
 .on('display', (res) => {
+    console.log(res)
 	if(Display.checkService(res)) {
         Display.reloadDisplay();
         Display.reloadDisplay2();
