@@ -387,7 +387,7 @@ $this->registerJs(
     <<<JS
 socket
 .on('display', (res) => {
-    
+    console.log('display',res)
 	if(Display.checkService(res)) {
         Display.reloadDisplay();
         Display.reloadDisplay2();
@@ -417,6 +417,7 @@ socket
 	}
 })
 .on('finish', (res) => {
+    console.log('finish',res)
 	if( jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1) {
         Display.reloadDisplay();
         Display.reloadDisplay2();
