@@ -703,14 +703,14 @@ class DisplayController extends \yii\web\Controller
             ->leftJoin('tb_service', 'tb_service.serviceid = tb_quequ.serviceid')
             ->leftJoin('tb_doctor', 'tb_doctor.doc_id = tb_quequ.doctor_id')
             ->where([
-                'tb_caller.call_status' => ['calling'],
+                'tb_caller.call_status' => ['calling', 'callend'],
                 'tb_counterservice_type.counterservice_typeid' => $config['counterservice_id'],
                 'tb_service.serviceid' => $config['service_id']
             ])
             ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
             ->limit(empty($config['display_limit']) ? 2 : $config['display_limit'])
             ->orderBy([
-                'tb_caller.call_timestp' => SORT_ASC
+                'tb_caller.call_timestp' => SORT_DESC
             ]);
         if ($lastcalling) {
             $query->andWhere('tb_caller.call_timestp <= :call_timestp', [':call_timestp' => $lastcalling['call_timestp']]);
