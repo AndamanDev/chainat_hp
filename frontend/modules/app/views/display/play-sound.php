@@ -400,6 +400,7 @@ $("#jplayer_inspector").jPlayerInspector({jPlayer:$(jPlayerid)});
 //Socket Event
 socket
 .on('call', (res) => {
+    console.log(res)
     if(model != null && Object.keys(model).length){
         var counters = (model.counterserviceid).split(',').map(v => parseInt(v));
         if(jQuery.inArray(parseInt(res.counter.counterserviceid), counters) != -1) {
