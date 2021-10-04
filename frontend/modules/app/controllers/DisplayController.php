@@ -633,6 +633,7 @@ class DisplayController extends \yii\web\Controller
             $map = ArrayHelper::map($query, 'serviceid', 'service_prefix');
             $caller_ids = ArrayHelper::getColumn($query, 'caller_ids');
             $mapArr = [];
+            $qnumArr = [];
             foreach ($servicePrefixs as $prefix) {
                 $rows = (new \yii\db\Query())
                     ->select(['tb_quequ.q_num', 'tb_quequ.quickly'])
@@ -651,7 +652,8 @@ class DisplayController extends \yii\web\Controller
                     ->orderBy(['tb_caller.call_timestp' => SORT_DESC])
                     ->groupBy('tb_quequ.q_ids')
                     ->one();
-                if ($rows) {
+                if ($rows && !in_array($rows['q_num'], $qnumArr)) {
+                    $qnumArr[] = $rows['q_num'];
                     $mapArr[] = [
                         'prefix' => $prefix,
                         'qnum' => $rows['q_num'],
