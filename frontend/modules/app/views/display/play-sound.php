@@ -316,7 +316,7 @@ var myPlaylist = new jPlayerPlaylist({
         var data = myPlaylist.playlist[current];
         if(data.wav.indexOf("please.wav") >= 0){
             var query = yii.getQueryParams(window.location.search)
-            dt_tabledisplay.ajax.url( '/app/display/index?id='+ query.id + '&q_ids='+data.artist.modelQueue.q_ids).load();
+            dt_tabledisplay.ajax.url( '/app/display/data-display?id='+ query.id + '&q_ids='+data.artist.modelQueue.q_ids).load();
             Display.reloadDisplay();
             Display.reloadDisplay2();
             Display.reloadHold();
