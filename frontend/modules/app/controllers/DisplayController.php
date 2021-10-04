@@ -90,6 +90,7 @@ class DisplayController extends \yii\web\Controller
     public function actionDataDisplay($id)
     {
         $request = Yii::$app->request;
+        $current_qid = $request->get('q_ids');
         $config = $this->findModelDisplayConfig($id);
         $counter = $this->findModelCounterserviceType($config['counterservice_id']);
         $config->service_id = !empty($config['service_id']) ? explode(",", $config['service_id']) : [];
@@ -98,7 +99,7 @@ class DisplayController extends \yii\web\Controller
         if ($request->isAjax) {
             \Yii::$app->response->format = Response::FORMAT_JSON;
             //$config = $request->post('config', []);
-            $query = $this->findDisplayData($config);
+            $query = $this->findDisplayData($config,  $current_qid);
 
             $map = ArrayHelper::map($query, 'serviceid', 'service_prefix');
             $caller_ids = ArrayHelper::getColumn($query, 'caller_ids');
@@ -679,7 +680,7 @@ class DisplayController extends \yii\web\Controller
         }
     }
 
-    protected function findDisplayData($config)
+    protected function findDisplayData($config,  $current_qid = null)
     {
         $lastcalling = $this->lastCalling($config);
         $query = (new \yii\db\Query())
@@ -707,12 +708,15 @@ class DisplayController extends \yii\web\Controller
                 'tb_service.serviceid' => $config['service_id']
             ])
             ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
-            //->limit($config['display_limit'])
+            ->limit(empty($config['display_limit']) ? 2 : $config['display_limit'])
             ->orderBy([
                 'tb_caller.call_timestp' => SORT_ASC
             ]);
         if ($lastcalling) {
             $query->andWhere('tb_caller.call_timestp <= :call_timestp', [':call_timestp' => $lastcalling['call_timestp']]);
+        }
+        if($current_qid){
+            $query->andWhere('tb_quequ.q_ids <= :q_ids', [':q_ids' => $current_qid]);
         }
         return $query->all();
     }
