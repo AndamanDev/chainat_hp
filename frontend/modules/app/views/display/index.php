@@ -452,8 +452,14 @@ Display = {
     reloadHold: function(){
         dt_tablehold.ajax.reload();//โหลดข้อมูลแสดงผล
     },
-    reloadDisplay: function(){
-        dt_tabledisplay.ajax.reload();//โหลดข้อมูลแสดงผล
+    reloadDisplay: function(q_ids = null){
+        if(q_ids) {
+            var query = yii.getQueryParams(window.location.search)
+            dt_tabledisplay.ajax.url( '/app/display/data-display?id='+ query.id + '&q_ids='+q_ids).load();
+        } else {
+            dt_tabledisplay.ajax.reload();//โหลดข้อมูลแสดงผล
+        }
+       
     },
     reloadDisplay2: function(){
         dt_tabledisplay2.ajax.reload();//โหลดข้อมูลแสดงผล
