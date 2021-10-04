@@ -649,6 +649,7 @@ class DisplayController extends \yii\web\Controller
                     ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
                     ->addParams([':q_num' => $prefix . '%'])
                     ->orderBy(['tb_caller.call_timestp' => SORT_DESC])
+                    ->groupBy('tb_quequ.q_ids')
                     ->one();
                 if ($rows) {
                     $mapArr[] = [
