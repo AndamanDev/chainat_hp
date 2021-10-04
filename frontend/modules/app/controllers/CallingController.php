@@ -4438,6 +4438,7 @@ class CallingController extends \yii\web\Controller
         $q =  ArrayHelper::getValue($params, 'q', null); //ข้อมูลคิว
         $service_id =  ArrayHelper::getValue($params, 'service_id', null); //ข้อมูลแผนก
         $counter_service_id =  ArrayHelper::getValue($params, 'counter_service_id', null); //ข้อมูลห้อง/โต๊ะ
+        $service = TbService::findOne($service_id);
 
         if (!$q) {
             throw new HttpException(400, 'invalid q.');
@@ -4518,6 +4519,7 @@ class CallingController extends \yii\web\Controller
                     'modelQTrans' => $modelQTrans,
                     'modelQueue' => $modelQueue,
                     'counter' => $counter,
+                    'service' => $service,
                     'data' => [
                         'counter_service_id' => $counter['counterserviceid'],
                         'qnumber' => $modelQueue['q_num']
