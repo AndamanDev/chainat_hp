@@ -45,6 +45,18 @@ class DisplayController extends \yii\web\Controller
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        if ($action->id == 'data-display') {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
+    }
+
     public function actionView($id)
     {
         $this->layout = 'display2';
@@ -71,7 +83,7 @@ class DisplayController extends \yii\web\Controller
         $config->counterservice_id = !empty($config['counterservice_id']) ? explode(",", $config['counterservice_id']) : [];
 
         $station = $config['sound_station_id'] ? TbSoundStation::findOne($config['sound_station_id']) : new TbSoundStation();
-        return $this->render('index', [
+        return $this->render('index2', [
             'config' => $config,
             'counter' => $counter,
             'station' => $station
@@ -257,7 +269,7 @@ class DisplayController extends \yii\web\Controller
                                     
                                 </table>
                                 ';
-                            }else{
+                            } else {
                                 return '
                                 <table class="table" style="background-color: inherit;margin-bottom: 0px;">
                                     <tr style="border:0px;">
@@ -636,7 +648,7 @@ class DisplayController extends \yii\web\Controller
             $qnumArr = [];
             foreach ($servicePrefixs as $prefix) {
                 $rows = (new \yii\db\Query())
-                    ->select(['tb_quequ.q_num', 'tb_quequ.quickly'])
+                    ->select(['tb_quequ.q_num', 'tb_quequ.quickly', 'tb_caller.caller_ids'])
                     ->from('tb_caller')
                     ->innerJoin('tb_quequ', 'tb_quequ.q_ids = tb_caller.q_ids')
                     ->innerJoin('tb_counterservice', 'tb_counterservice.counterserviceid = tb_caller.counter_service_id')
@@ -657,6 +669,7 @@ class DisplayController extends \yii\web\Controller
                     $mapArr[] = [
                         'prefix' => $prefix,
                         'qnum' => $rows['q_num'],
+                        'caller_ids' => $rows['caller_ids'],
                         'DT_RowAttr' => ['data-key' => $prefix],
                         'DT_RowId' => $prefix,
                     ];
@@ -664,6 +677,7 @@ class DisplayController extends \yii\web\Controller
                         $mapArr[] = [
                             'prefix' => '<small>คิวด่วน</small>',
                             'qnum' => $rows['q_num'],
+                            'caller_ids' => $rows['caller_ids'],
                             'DT_RowAttr' => ['data-key' => $prefix],
                             'DT_RowId' => $prefix,
                         ];
@@ -672,6 +686,7 @@ class DisplayController extends \yii\web\Controller
                     $mapArr[] = [
                         'prefix' => $prefix,
                         'qnum' => '-',
+                        'caller_ids' => null,
                         'DT_RowAttr' => ['data-key' => $prefix],
                         'DT_RowId' => $prefix,
                     ];
@@ -718,7 +733,7 @@ class DisplayController extends \yii\web\Controller
         if ($lastcalling) {
             $query->andWhere('tb_caller.call_timestp <= :call_timestp', [':call_timestp' => $lastcalling['call_timestp']]);
         }
-        if($current_qid){
+        if ($current_qid) {
             $query->andWhere('tb_quequ.q_ids <= :q_ids', [':q_ids' => $current_qid]);
         }
         return $query->all();

@@ -316,13 +316,14 @@ var myPlaylist = new jPlayerPlaylist({
         var data = myPlaylist.playlist[current];
         if(data.wav.indexOf("please.wav") >= 0){
             var query = yii.getQueryParams(window.location.search)
+            app.caller_ids = parseInt(data.artist.modelCaller.caller_ids)
             //dt_tabledisplay.ajax.url( '/app/display/data-display?id='+ query.id + '&q_ids='+data.artist.modelQueue.q_ids).load();
-            Display.reloadDisplay(data.artist.modelQueue.q_ids);
-            Display.reloadDisplay2();
-            Display.reloadHold();
+            // Display.reloadDisplay(data.artist.modelQueue.q_ids);
+            // Display.reloadDisplay2();
+            // Display.reloadHold();
             setTimeout(function(){
                 Display.blink(data);
-            }, 1000);
+            }, 500);
             // socket.emit('display', data);//sending data
             //toastr.success(' ' + data.title, 'Calling!', {timeOut: 5000,positionClass: "toast-top-right"});
         }
@@ -411,7 +412,7 @@ socket
                 // Display.reloadHold();
                 
                 setTimeout(function(){
-                    Queue.addMedia(res);
+                    // Queue.addMedia(res);
                    
                 }, 1000);
             }
