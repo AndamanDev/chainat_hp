@@ -572,7 +572,7 @@ var app = new Vue({
             const item = this.qlist.find(r => parseInt(r.caller_ids) === parseInt(this.caller_ids))
             // rows = rows.filter(r => parseInt(r.caller_ids) <= this.caller_ids)
             if(item) {
-                rows = rows.filter(r => parseFloat(moment(r.call_timestp).format('X')) <= parseFloat(moment(item.call_timestp).format('X')))
+                rows = rows.filter(r => r.call_timestp <= item.call_timestp)
             }
         }
         var th = moment().locale('th');
@@ -590,7 +590,7 @@ var app = new Vue({
                 caller_ids: "-",
                 pt_name: "-",
                 counterservice_callnumber: "-",
-                call_timestp: th.format("YYYY-MM-DD H:mm:ss")
+                call_timestp: parseFloat(moment().format('X'))
             }
             
             for (let i = 0; i < limit; i++) {
@@ -692,7 +692,7 @@ var app = new Vue({
                                 caller_ids: res.modelCaller.caller_ids,
                                 pt_name: res.modelQueue.pt_name,
                                 counterservice_callnumber: res.counter.counterservice_callnumber,
-                                call_timestp: res.modelCaller.call_timestp
+                                call_timestp: parseFloat(moment(res.modelCaller.call_timestp).format('X'))
                             })
                            
                         }
@@ -740,7 +740,7 @@ var app = new Vue({
                             caller_ids: row.caller_ids,
                             pt_name: row.pt_name,
                             counterservice_callnumber: row.counterservice_callnumber,
-                            call_timestp: row.call_timestp
+                            call_timestp: parseFloat(moment(row.call_timestp).format('X'))
                         })
                     }
                 }
