@@ -462,7 +462,7 @@ class CallingController extends \yii\web\Controller
                 ->leftJoin('tb_service', 'tb_service.serviceid = tb_quequ.serviceid')
                 ->where([
                     'tb_quequ.serviceid' => $services,
-                    'tb_caller.counter_service_id' => $formData['counter_service'],
+                    //'tb_caller.counter_service_id' => $formData['counter_service'],
                     'tb_caller.call_status' => ['calling', 'callend'],
                     'tb_quequ.q_status_id' => [2, 11, 12, 13]
                 ])
@@ -643,7 +643,7 @@ class CallingController extends \yii\web\Controller
                 ->leftJoin('tb_service', 'tb_service.serviceid = tb_quequ.serviceid')
                 ->where([
                     'tb_quequ.serviceid' => $services,
-                    'tb_caller.counter_service_id' => $formData['counter_service'],
+                   // 'tb_caller.counter_service_id' => $formData['counter_service'],
                     'tb_caller.call_status' => 'hold',
                     'tb_quequ.q_status_id' => [3, 11, 12, 13]
                 ])
