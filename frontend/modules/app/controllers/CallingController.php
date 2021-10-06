@@ -767,6 +767,7 @@ class CallingController extends \yii\web\Controller
                 $counter = $this->findModelCounterservice($dataForm['counter_service']);
                 $modelQ = $this->findModelQuequ($id);
                 $modelQueue = TbQuequ::findOne($id);
+                $service = TbService::findOne($dataProfile['service_id']);
 
 
                 $model = new TbCaller();
@@ -816,6 +817,7 @@ class CallingController extends \yii\web\Controller
                         'modelQueue' => $modelQueue,
                         'modelProfile' => $modelProfile,
                         'counter' => $counter,
+                        'service' => $service,
                         'eventOn' => 'tb-waiting',
                         'state' => 'call'
                     ];
@@ -852,6 +854,7 @@ class CallingController extends \yii\web\Controller
             $counter = $this->findModelCounterservice($dataForm['counter_service']);
             // $modelQ = $this->findModelQuequ($data['q_ids']);
             $modelQueue = TbQuequ::findOne($data['q_ids']);
+            $service = TbService::findOne($dataProfile['service_id']);
 
 
             $model = $this->findModelCaller($id);
@@ -893,6 +896,7 @@ class CallingController extends \yii\web\Controller
                     'modelQueue' => $modelQueue,
                     'modelProfile' => $modelProfile,
                     'counter' => $counter,
+                    'service' => $service,
                     'eventOn' => 'tb-calling',
                     'state' => 'recall'
                 ];
