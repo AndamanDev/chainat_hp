@@ -567,7 +567,7 @@ var app = new Vue({
   },
   computed: {
     filteredQueues: function() {
-        let rows = _.orderBy(this.qlist, ['call_timestp'],['desc'])
+        let rows = _.orderBy(this.qlist.filter(row => row.q_num !== '-'), ['call_timestp'],['desc'])
         if(this.caller_ids) {
             const item = this.qlist.find(r => parseInt(r.caller_ids) === parseInt(this.caller_ids))
             // rows = rows.filter(r => parseInt(r.caller_ids) <= this.caller_ids)
@@ -686,6 +686,7 @@ var app = new Vue({
                             if(item){
                                 _this.qlist = _this.qlist.filter(row => row !== item)
                             }
+                            _this.qlist = _this.qlist.filter(row => row.q_num !== '-')
                             _this.qlist.push({
                                 q_num: res.modelQueue.q_num,
                                 caller_ids: res.modelCaller.caller_ids,
