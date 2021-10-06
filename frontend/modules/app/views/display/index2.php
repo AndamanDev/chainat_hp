@@ -590,7 +590,7 @@ var app = new Vue({
                 caller_ids: "-",
                 pt_name: "-",
                 counterservice_callnumber: "-",
-                call_timestp: parseFloat(moment().format('X'))
+                call_timestp: parseFloat(moment().subtract(20, "minutes").format('X'))
             }
             
             for (let i = 0; i < limit; i++) {
