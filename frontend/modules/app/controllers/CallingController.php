@@ -774,7 +774,7 @@ class CallingController extends \yii\web\Controller
                 $model->q_ids = $id;
                 $model->qtran_ids = $data['ids'];
                 $model->counter_service_id = $dataForm['counter_service'];
-                $model->call_timestp = new Expression('NOW()');
+                $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
                 $model->call_status = TbCaller::STATUS_CALLING;
 
                 $modelTrans = $this->findModelQTrans($data['ids']);
@@ -858,7 +858,7 @@ class CallingController extends \yii\web\Controller
 
 
             $model = $this->findModelCaller($id);
-            $model->call_timestp = new Expression('NOW()');
+            $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
 
             $modelTrans = $this->findModelQTrans($data['ids']);
@@ -2616,7 +2616,7 @@ class CallingController extends \yii\web\Controller
                 $model->qtran_ids = $data['ids'];
                 //$model->servicegroupid = $modelProfile['service_groupid'];
                 $model->counter_service_id = $dataForm['counter_service'];
-                $model->call_timestp = new Expression('NOW()');
+                $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
                 $model->call_status = TbCaller::STATUS_CALLING;
 
                 $modelTrans = $this->findModelQTrans($data['ids']);
@@ -2681,7 +2681,7 @@ class CallingController extends \yii\web\Controller
                 $model->qtran_ids = $data['ids'];
                 //$model->servicegroupid = $modelProfile['service_groupid'];
                 $model->counter_service_id = $dataForm['counter_service'];
-                $model->call_timestp = new Expression('NOW()');
+                $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
                 $model->call_status = TbCaller::STATUS_END;
 
                 $modelTrans = $this->findModelQTrans($data['ids']);
@@ -2738,7 +2738,7 @@ class CallingController extends \yii\web\Controller
             $modelQ = $this->findModelQuequ($data['q_ids']);
 
             $model = $this->findModelCaller($data['caller_ids']);
-            $model->call_timestp = new Expression('NOW()');
+            $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
             if ($model->save()) {
                 return [
@@ -2824,7 +2824,7 @@ class CallingController extends \yii\web\Controller
             $model = $this->findModelCaller($data['caller_ids']);
             $modelQtran = $this->findModelQTrans($model['qtran_ids']);
             $modelQtran->service_status_id = 2;
-            $model->call_timestp = new Expression('NOW()');
+            $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
 
             $modelQ->q_status_id = 2;
@@ -3083,7 +3083,7 @@ class CallingController extends \yii\web\Controller
                 $model->qtran_ids = $data['ids'];
                 //$model->servicegroupid = $modelProfile['service_groupid'];
                 $model->counter_service_id = $request->post('value');
-                $model->call_timestp = new Expression('NOW()');
+                $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
                 $model->call_status = TbCaller::STATUS_CALLING;
 
                 $modelTrans = $this->findModelQTrans($data['ids']);
@@ -3167,7 +3167,7 @@ class CallingController extends \yii\web\Controller
                 $model->qtran_ids = $data['ids'];
                 //$model->servicegroupid = $modelProfile['service_groupid'];
                 $model->counter_service_id = $request->post('value');
-                $model->call_timestp = new Expression('NOW()');
+                $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
                 $model->call_status = TbCaller::STATUS_FINISHED;
 
                 $modelTrans = $this->findModelQTrans($data['ids']);
@@ -3227,7 +3227,7 @@ class CallingController extends \yii\web\Controller
             $modelQtran = $this->findModelQTrans($model['qtran_ids']);
             $counter = $this->findModelCounterservice($model['counter_service_id']);
 
-            $model->call_timestp = new Expression('NOW()');
+            $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
             $modelQ->q_status_id = 2;
             $modelQtran->service_status_id = 2;
@@ -3363,7 +3363,7 @@ class CallingController extends \yii\web\Controller
             $counter = $this->findModelCounterservice($model['counter_service_id']);
             $modelQtran->service_status_id = 2;
             $modelQueue->q_status_id = 2;
-            $model->call_timestp = new Expression('NOW()');
+            $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
             if ($model->save() && $modelQueue->save() && $modelQtran->save()) {
                 if (!empty($modelQueue['token'])) {
@@ -3607,7 +3607,7 @@ class CallingController extends \yii\web\Controller
                 $model->qtran_ids = $data['ids'];
                 //$model->servicegroupid = $modelProfile['service_groupid'];
                 $model->counter_service_id = $request->post('value');
-                $model->call_timestp = new Expression('NOW()');
+                $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
                 $model->call_status = TbCaller::STATUS_CALLING;
 
                 $modelTrans = $this->findModelQTrans($data['ids']);
@@ -3663,7 +3663,7 @@ class CallingController extends \yii\web\Controller
             $modelQ = $this->findModelQuequ($data['q_ids']);
 
             $model = $this->findModelCaller($data['caller_ids']);
-            $model->call_timestp = new Expression('NOW()');
+            $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
             if ($model->save()) {
                 return [
@@ -3789,7 +3789,7 @@ class CallingController extends \yii\web\Controller
             $model = $this->findModelCaller($data['caller_ids']);
             $modelQtran = $this->findModelQTrans($model['qtran_ids']);
             $modelQtran->service_status_id = 2;
-            $model->call_timestp = new Expression('NOW()');
+            $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
             if ($model->save() && $modelQtran->save()) {
                 return [
@@ -4256,7 +4256,7 @@ class CallingController extends \yii\web\Controller
                     $modelCaller->q_ids = $data['q_ids'];
                     $modelCaller->qtran_ids = $data['ids'];
                     $modelCaller->counter_service_id = $dataForm['counter_service'];
-                    $modelCaller->call_timestp = new Expression('NOW()');
+                    $modelCaller->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
                     $modelCaller->call_status = TbCaller::STATUS_CALLING;
 
                     $modelTrans = $this->findModelQTrans($data['ids']);
