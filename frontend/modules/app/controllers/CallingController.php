@@ -860,6 +860,7 @@ class CallingController extends \yii\web\Controller
             $model = $this->findModelCaller($id);
             $model->call_timestp = Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s');
             $model->call_status = TbCaller::STATUS_CALLING;
+            $model->counter_service_id = $dataForm['counter_service'];
 
             $modelTrans = $this->findModelQTrans($data['ids']);
             $modelTrans->service_status_id = 2;
