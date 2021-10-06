@@ -569,7 +569,11 @@ var app = new Vue({
     filteredQueues: function() {
         let rows = _.orderBy(this.qlist, ['call_timestp'],['desc'])
         if(this.caller_ids) {
-            rows = rows.filter(r => parseInt(r.caller_ids) <= this.caller_ids)
+            const item = this.qlist.find(r => parseInt(r.caller_ids) === parseInt(this.caller_ids))
+            // rows = rows.filter(r => parseInt(r.caller_ids) <= this.caller_ids)
+            if(item) {
+                rows = rows.filter(r => parseFloat(moment(r.call_timestp).format('X')) <= parseFloat(moment(item.call_timestp).format('X')))
+            }
         }
         var th = moment().locale('th');
         const limit = config.display_limit || 2
@@ -669,7 +673,7 @@ var app = new Vue({
         initSocket: function() {
             const _this = this
             socket.on('call', (res) => {
-                if(model != null && Object.keys(model).length && myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0 && _this.qlist.filter(r => r.q_num === res.modelQueue.q_num).length === 0){
+                if(model != null && Object.keys(model).length && myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0){
                     var counters = (model.counterserviceid).split(',').map(v => parseInt(v));
                     if(jQuery.inArray(parseInt(res.counter.counterserviceid), counters) != -1) {
                         if(jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1) {
@@ -678,6 +682,10 @@ var app = new Vue({
                             setTimeout(function(){
                                 Queue.addMedia(res);
                             }, 500);
+                            const item = _this.qlist.find(r => r.q_num === res.modelQueue.q_num)
+                            if(item){
+                                _this.qlist = _this.qlist.filter(row => row !== item)
+                            }
                             _this.qlist.push({
                                 q_num: res.modelQueue.q_num,
                                 caller_ids: res.modelCaller.caller_ids,
@@ -685,20 +693,23 @@ var app = new Vue({
                                 counterservice_callnumber: res.counter.counterservice_callnumber,
                                 call_timestp: res.modelCaller.call_timestp
                             })
+                           
                         }
                     }
                 }
             }).on('hold', (res) => {
+                _this.qlist = _this.qlist.filter(row => parseInt(row.caller_ids) !== parseInt(res.modelCaller.caller_ids))
                 if( jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1) {
                     tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
                     thold.ajax.reload();//โหลดข้อมูลคิวพัก
-                    _this.qlist = _this.qlist.filter(row => row.caller_ids !== res.modelCaller.caller_ids)
                 }
             }).on('finish', (res) => {
+                if(myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0) {
+                    _this.qlist = _this.qlist.filter(row => parseInt(row.caller_ids) !== parseInt(res.modelCaller.caller_ids))
+                }
                 if( jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1 &&  myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0) {
                     tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
                     thold.ajax.reload();//โหลดข้อมูลคิวพัก
-                    _this.qlist = _this.qlist.filter(row => row.caller_ids !== res.modelCaller.caller_ids)
                 }
             }).on('display', (res) => {
                 if(Display.checkService(res)) {

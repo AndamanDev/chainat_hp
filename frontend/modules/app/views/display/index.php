@@ -218,13 +218,14 @@ echo Datatables::widget([
     'id' => 'table-display',
     'select2' => true,
     'clientOptions' => [
-        'ajax' => [
-            'url' => Url::to(['/displaylist', 'id' => $config['display_ids']]) ,
-            // 'data' => [
-            //     'config' => $config
-            // ],
-            'type' => 'GET'
-        ],
+        "data" => [],
+        // 'ajax' => [
+        //     'url' => Url::to(['/displaylist', 'id' => $config['display_ids']]) ,
+        //     // 'data' => [
+        //     //     'config' => $config
+        //     // ],
+        //     'type' => 'GET'
+        // ],
         "dom" => "t",
         // "language" => array_merge(Yii::$app->params['dtLanguage'], [
         //     "search" => "_INPUT_ ",
@@ -233,8 +234,8 @@ echo Datatables::widget([
         "pageLength" => empty($config['display_limit']) ? -1 : $config['display_limit'],
         "autoWidth" => false,
         "deferRender" => true,
-        "ordering" => false,
-        //"order" => [[ 2, "asc" ]],
+        //"ordering" => false,
+        "order" => [[ 2, "asc" ]],
         "info" => false,
         'columns' => [
             [
@@ -419,11 +420,11 @@ socket
 .on('finish', (res) => {
     console.log('finish',res)
 	if( jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1 &&  myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0) {
-        Display.reloadDisplay();
-        Display.reloadDisplay2();
-		Display.reloadHold();
-        Display.removeRow(res);
-        Display.addRows();
+        // Display.reloadDisplay();
+        // Display.reloadDisplay2();
+		// Display.reloadHold();
+        // Display.removeRow(res);
+        // Display.addRows();
 	}
 });
 
@@ -474,7 +475,56 @@ Display = {
         }else{
             return false;
         }
-    }
+    },
+    AddDataDisplay: function(res){
+        console.log('AddDataDisplay',res)
+        var data = dt_tabledisplay.rows().data();
+        if(!data.length){
+            dt_tabledisplay.row.add({
+                    "index": res.modelCaller.caller_ids,
+                    "DT_RowId": res.modelCaller.caller_ids,
+                    "DT_RowAttr": {
+                        "data-key": res.modelCaller.caller_ids
+                    },
+                    "q_num": `<table class="table" style="background-color: inherit;margin-bottom: 0px;"><tr style="border:0px;"><td  style="border-top:0px; width: 80%"><text class="\${res.modelQueue.q_num}">\${res.modelQueue.q_num}</text></td><td rowspan="2" style="border-top:0px; width: 20%;vertical-align: middle;"><text class="\${res.modelQueue.q_num}">\${res.counter.counterservice_callnumber}</text></td></tr><tr  style="border:0px;"><td style="border-top:0px; text-align:center;width:80%"><text class="\${res.modelQueue.q_num}">\${res.modelQueue.pt_name}</text></td></tr></table>`,
+                    "service_number": `<text class="\${res.modelQueue.q_num}">\${res.counter.counterservice_callnumber}</text>`,
+                    "call_timestp": res.modelCaller.call_timestp,
+                    "doctor_name": res.modelQueue.doctor_name,
+                    "service_name": res.service.service_name,
+                    "serviceid": res.service.serviceid,
+                    "service_prefix": res.service.service_prefix,
+                    "pt_name": res.modelQueue.pt_name,
+                    "pt_pic":  res.modelQueue.pt_pic,
+                    "q_number":  res.modelQueue.q_number,
+                }).draw();
+        } else {
+            dt_tabledisplay.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+                var data = this.data();
+                console.log(data)
+                if(data.q_number != res.modelQueue.q_number){
+                    dt_tabledisplay.row.add({
+                        "index": res.modelCaller.caller_ids,
+                        "DT_RowId": res.modelCaller.caller_ids,
+                        "DT_RowAttr": {
+                            "data-key": res.modelCaller.caller_ids
+                        },
+                        "q_num": `<table class="table" style="background-color: inherit;margin-bottom: 0px;"><tr style="border:0px;"><td  style="border-top:0px; width: 80%"><text class="\${res.modelQueue.q_num}">\${res.modelQueue.q_num}</text></td><td rowspan="2" style="border-top:0px; width: 20%;vertical-align: middle;"><text class="\${res.modelQueue.q_num}">\${res.counter.counterservice_callnumber}</text></td></tr><tr  style="border:0px;"><td style="border-top:0px; text-align:center;width:80%"><text class="\${res.modelQueue.q_num}">\${res.modelQueue.pt_name}</text></td></tr></table>`,
+                        "service_number": `<text class="\${res.modelQueue.q_num}">\${res.counter.counterservice_callnumber}</text>`,
+                        "call_timestp": res.modelCaller.call_timestp,
+                        "doctor_name": res.modelQueue.doctor_name,
+                        "service_name": res.service.service_name,
+                        "serviceid": res.service.serviceid,
+                        "service_prefix": res.service.service_prefix,
+                        "pt_name": res.modelQueue.pt_name,
+                        "pt_pic":  res.modelQueue.pt_pic,
+                        "q_number":  res.modelQueue.q_number,
+                    }).draw();
+                }
+            } );
+        }
+       
+       
+    },
 };
 
 var order = 'asc';
@@ -491,6 +541,7 @@ setInterval(function(){
         dt_tabledisplay2.order( [ 0, order ] ).draw();
     }
 }, 5000);
+
 JS
 );
 ?>
