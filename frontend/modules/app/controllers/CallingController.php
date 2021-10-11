@@ -63,7 +63,7 @@ class CallingController extends \yii\web\Controller
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['led-options', 'calling-queue', 'hold-queue', 'end-queue', 'send-to-doctor', 'waiting-doctor-queue', 'waiting-pharmacy-queue', 'next-queue'],
+                        'actions' => ['led-options', 'calling-queue', 'hold-queue', 'end-queue', 'send-to-doctor', 'waiting-doctor-queue', 'waiting-pharmacy-queue', 'next-queue', 'queue-by-vn-hn'],
                         'roles' => ['?'],
                     ],
                 ],
@@ -5227,6 +5227,19 @@ class CallingController extends \yii\web\Controller
             ->where(['serviceid' => $service_id, 'q_status_id' => [1]])
             ->andWhere('DATE(created_at) = CURRENT_DATE')
             ->orderBy('created_at ASC')
+            ->one();
+        if (!$modelQueue) {
+            throw new HttpException(404, 'ไม่พบรายการคิว');
+        }
+        return $modelQueue;
+    }
+
+    public function actionQueueByVnHn($vn, $hn) {
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $modelQueue = TbQuequ::find()
+            ->where(['q_vn' => $vn, 'q_hn' => $hn])
+            ->andWhere('DATE(created_at) = CURRENT_DATE')
+            // ->orderBy('created_at ASC')
             ->one();
         if (!$modelQueue) {
             throw new HttpException(404, 'ไม่พบรายการคิว');
