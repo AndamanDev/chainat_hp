@@ -30,9 +30,10 @@ class TbTokenNhso extends \yii\db\ActiveRecord
     {
         return [
             [['user_person_id', 'smctoken'], 'required'],
-            [['user_person_id', 'createdby'], 'integer'],
+            [['createdby'], 'integer'],
             [['crearedat'], 'safe'],
             [['smctoken'], 'string', 'max' => 255],
+            [['user_person_id'], 'string', 'max' => 50],
         ];
     }
 
