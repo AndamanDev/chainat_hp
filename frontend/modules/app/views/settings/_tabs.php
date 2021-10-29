@@ -54,10 +54,10 @@ echo Tabs::widget([
             'label' => 'Lab',
             'content' => $this->render('_content_lab'),
         ],
-        [
-            'label' => 'รีเซ็ตคิว',
-            'content' => $this->render('_content_qreset'),
-        ],
+        // [
+        //     'label' => 'รีเซ็ตคิว',
+        //     'content' => $this->render('_content_qreset'),
+        // ],
     ],
     'encodeLabels' => false,
 ]);
