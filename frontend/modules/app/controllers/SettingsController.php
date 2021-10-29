@@ -2808,11 +2808,11 @@ class SettingsController extends \yii\web\Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $request = Yii::$app->request;
-        // $params = Yii::$app->getRequest()->getRawBody();
-        // $body = Json::decode($params);
+        $params = Yii::$app->getRequest()->getRawBody();
+        $body = Json::decode($params);
         $model = new TbTokenNhso();
-        $model->user_person_id = $request->post('id_card');
-        $model->smctoken = $request->post('token');
+        $model->user_person_id = $body['id_card'];
+        $model->smctoken = $body['token'];
         $model->createdby = 1;
         $model->crearedat = Yii::$app->formatter->asDate('now', 'php:Y-m-d H:i:s');
         if ($model->save()) {
