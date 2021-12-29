@@ -6,7 +6,7 @@ return [
         '@homer' => '@frontend/themes/homer',
         '@homer/user' => '@frontend/themes/homer/modules/user',
         '@dektrium/user' => '@common/modules/yii2-user',
-        '@mdm/admin' => '@common/modules/yii2-admin',
+        // '@mdm/admin' => '@common/modules/yii2-admin',
         '@yii/icons' => '@homer/widgets/yii2-icons',
         '@homer/mpdf' => '@homer/extensions/yii2-mpdf',
         '@Mpdf' => '@common/lib/mpdf/src',
