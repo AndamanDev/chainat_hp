@@ -74,6 +74,7 @@ return [
             ],
         ],
         'user' => [
+            'identityClass' => 'homer\user\models\User',
             'identityCookie' => [
                 'name'     => '_backendIdentity',
                 'path'     => '/admin',

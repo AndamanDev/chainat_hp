@@ -1,4 +1,5 @@
 <?php
+
 use \yii\web\Request;
 
 $baseUrl = str_replace('/frontend/web', '', (new Request)->getBaseUrl());
@@ -12,7 +13,7 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log','dektrium\user\Bootstrap'],
+    'bootstrap' => ['log', 'dektrium\user\Bootstrap'],
     'controllerNamespace' => 'frontend\controllers',
     'name' => 'ระบบคิว รพ. ชัยนาทนเรนทร',
     'defaultRoute' => '/app/display/display-list',
@@ -23,17 +24,17 @@ return [
             'disabledCommands' => ['netmount'],
             'roots' => [
                 [
-                    'baseUrl'=>'@web',
-                    'basePath'=>'@webroot',
+                    'baseUrl' => '@web',
+                    'basePath' => '@webroot',
                     'path' => '/',
                     'access' => ['read' => 'Admin', 'write' => 'Admin'],
                     'options' => [
-                      'attributes' => [
-                          [
-                              'pattern' => '!^/assets!',
-                              'hidden' => true
-                          ]
-                      ],
+                        'attributes' => [
+                            [
+                                'pattern' => '!^/assets!',
+                                'hidden' => true
+                            ]
+                        ],
                     ]
                 ]
             ]
@@ -93,31 +94,31 @@ return [
                     'label' => 'เส้นทาง'
                 ],
                 'rule' => null,
-                'menu' => null, 
-                'user' => null, 
+                'menu' => null,
+                'user' => null,
             ],
             'controllerMap' => [
                 'assignment' => [
-                   'class' => 'mdm\admin\controllers\AssignmentController',
-                   /* 'userClassName' => 'app\models\User', */
-                   'idField' => 'user_id',
-                   'usernameField' => 'username',
-                   'extraColumns' => [
-                       [
-                           'label' => 'ชื่อ',
-                           'value' => function($model, $key, $index, $column) {
-                               return $model->profile->name;
-                           },
-                       ],
-                       [
-                           'label' => 'สิทธิ์การใช้งาน',
-                           'value' => function($model, $key, $index, $column) {
-                               return $model->profile->permissions;
-                           },
-                       ],
-                   ],
-               ],
-           ],
+                    'class' => 'mdm\admin\controllers\AssignmentController',
+                    /* 'userClassName' => 'app\models\User', */
+                    'idField' => 'user_id',
+                    'usernameField' => 'username',
+                    'extraColumns' => [
+                        [
+                            'label' => 'ชื่อ',
+                            'value' => function ($model, $key, $index, $column) {
+                                return $model->profile->name;
+                            },
+                        ],
+                        [
+                            'label' => 'สิทธิ์การใช้งาน',
+                            'value' => function ($model, $key, $index, $column) {
+                                return $model->profile->permissions;
+                            },
+                        ],
+                    ],
+                ],
+            ],
         ],
         'gridview' =>  [
             'class' => '\kartik\grid\Module'
@@ -240,9 +241,9 @@ return [
             'app/calling/play-sound',
             'app/calling/autoload-media',
             'app/calling/update-status',
-	          'site/index',
-	          'app/kiosk/led-options',
-	          'app/settings/save-nhso-token',
+            'site/index',
+            'app/kiosk/led-options',
+            'app/settings/save-nhso-token',
             'app/kiosk/pt-right',
             'app/kiosk/create-queue',
             'app/calling/calling-queue',
