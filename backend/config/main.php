@@ -43,7 +43,7 @@ return [
                 ],
             ],
         ],
-        'admin-manager' => [
+        'rbac' => [
             'class' => 'mdm\admin\Module',
             'layout' => 'top-menu',
             'menus' => [

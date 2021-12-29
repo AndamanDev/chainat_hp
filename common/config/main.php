@@ -27,7 +27,7 @@ return [
             'cost' => 12,
             'admins' => ['admin'],
         ],
-        'admin-manager' => [
+        'rbac' => [
             'class' => 'mdm\admin\Module',
         ],
         'menu' => [
