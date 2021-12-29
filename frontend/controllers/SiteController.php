@@ -1,4 +1,5 @@
 <?php
+
 namespace frontend\controllers;
 
 use Yii;
@@ -19,6 +20,7 @@ use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use kartik\helpers\Enum;
 use yii\helpers\Json;
+
 /**
  * Site controller
  */
@@ -32,7 +34,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'index', 'about', 'login','contact'],
+                'only' => ['logout', 'signup', 'index', 'about', 'login', 'contact'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -40,14 +42,14 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout','about', 'login','contact'],
+                        'actions' => ['logout', 'about', 'login', 'contact'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
                         'actions' => ['index'],
                         'allow' => true,
-                        'roles' => ['?','@'],
+                        'roles' => ['?', '@'],
                     ],
                 ],
             ],
@@ -85,7 +87,8 @@ class SiteController extends Controller
      * @return mixed
      */
 
-    public function actionIndex(){
+    public function actionIndex()
+    {
         $data = [];
         $services = TbService::find()->all();
         $seriesall = [];
@@ -94,23 +97,23 @@ class SiteController extends Controller
         $subseries2 = [];
         $y = 5;
         $day = date('Y-m-d');
-        $allq = TbQuequ::find()->count();
+        $allq = TbQuequ::find()->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')->count();
         //$allq = TbQuequ::find()->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])->count();
         for ($x = 1; $x <= 17; $x++) {
-            $d1 = new \DateTime( $day.' '.$y.':00:00' );
+            $d1 = new \DateTime($day . ' ' . $y . ':00:00');
             $d1->modify('+1 hour');
-            $h1 = $d1->format('H:i:s').PHP_EOL;
+            $h1 = $d1->format('H:i:s') . PHP_EOL;
 
-            $d2 = new \DateTime( $day.' '.$y.':00:00' );
+            $d2 = new \DateTime($day . ' ' . $y . ':00:00');
             $d2->modify('+2 hour');
-            $h2 = $d2->format('H:i:s').PHP_EOL;
+            $h2 = $d2->format('H:i:s') . PHP_EOL;
 
             $y++;
 
-            $start = $day.' '.$h1;
-            $end = $day.' '.$h2;
-            $count = TbQuequ::find()->where(['between', 'created_at',$start, $end])->count();
-            $t = substr($h1,0,5).'-'.substr($h2,0,5);
+            $start = $day . ' ' . $h1;
+            $end = $day . ' ' . $h2;
+            $count = TbQuequ::find()->where(['between', 'created_at', $start, $end])->count();
+            $t = substr($h1, 0, 5) . '-' . substr($h2, 0, 5);
             $series2[] = [
                 "name" => $t,
                 "y" => intval($count),
@@ -118,10 +121,10 @@ class SiteController extends Controller
             ];
 
             $drilldown = [];
-            foreach($services as $service){
-                $count = TbQuequ::find()->where(['between', 'created_at',$start, $end])->andWhere(['serviceid' => $service['serviceid']])->count();
+            foreach ($services as $service) {
+                $count = TbQuequ::find()->where(['between', 'created_at', $start, $end])->andWhere(['serviceid' => $service['serviceid']])->count();
                 $drilldown[] = [
-                    $service['service_name'],intval($count)
+                    $service['service_name'], intval($count)
                 ];
             }
             $subseries2[] = [
@@ -129,26 +132,37 @@ class SiteController extends Controller
                 'id' => $t,
                 'data' => $drilldown
             ];
-        
+
             unset($drilldown);
         }
         $allwait = 0;
-        foreach($services as $service){
+        foreach ($services as $service) {
             $count = TbQuequ::find()
-                    ->where(['serviceid' => $service['serviceid']])
-                    //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
-                    ->count();
+                ->where([
+                    'tb_quequ.serviceid' => $service['serviceid'],
+                ])
+                ->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')
+                //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
+                ->count();
             $wait = TbQtrans::find()
-                    ->where(['serviceid' => $service['serviceid'],'service_status_id' => [1]])
-                    //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
-                    ->innerJoin('tb_quequ','tb_quequ.q_ids = tb_qtrans.q_ids')
-                    ->count();
+                ->where([
+                    'tb_quequ.serviceid' => $service['serviceid'],
+                    'tb_qtrans.service_status_id' => [1],
+                ])
+                ->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')
+                //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
+                ->innerJoin('tb_quequ', 'tb_quequ.q_ids = tb_qtrans.q_ids')
+                ->count();
             $waitEx = TbQtrans::find()
-                    ->where(['serviceid' => $service['serviceid'],'service_status_id' => [4]])
-                    //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
-                    ->andWhere(['not', ['counter_service_id' => null]])
-                    ->innerJoin('tb_quequ','tb_quequ.q_ids = tb_qtrans.q_ids')
-                    ->count();
+                ->where([
+                    'tb_quequ.serviceid' => $service['serviceid'],
+                    'tb_qtrans.service_status_id' => [4],
+                ])
+                ->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')
+                //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
+                ->andWhere(['not', ['counter_service_id' => null]])
+                ->innerJoin('tb_quequ', 'tb_quequ.q_ids = tb_qtrans.q_ids')
+                ->count();
             $wait = $wait + $waitEx;
             $arr = [
                 'service_name' => $service['service_name'],
@@ -167,10 +181,10 @@ class SiteController extends Controller
                 'wait' => $allwait,
             ]
         ];
-        $seriesall = [['name' => 'คิวทั้งหมด','data' => $seriesall,'color' => '#3498db']];
-        $serieswait = [['name' => 'คิวรอ','data' => $serieswait,'color' => '#e74c3c']];
+        $seriesall = [['name' => 'คิวทั้งหมด', 'data' => $seriesall, 'color' => '#3498db']];
+        $serieswait = [['name' => 'คิวรอ', 'data' => $serieswait, 'color' => '#e74c3c']];
         //return Json::encode(ArrayHelper::merge($seriesall, $serieswait));
-        return $this->render('index',[
+        return $this->render('index', [
             'data' => ArrayHelper::merge($all, $data),
             'categories' => ArrayHelper::getColumn($services, 'service_name'),
             'series' => ArrayHelper::merge($seriesall, $serieswait),
@@ -238,15 +252,16 @@ class SiteController extends Controller
         ]);
     }*/
 
-    protected function countAllMonth($serviceid){
+    protected function countAllMonth($serviceid)
+    {
         $items = [];
-        foreach(Enum::monthList() as $m){
-            $start = date('Y-m-d', strtotime('first day of '.$m.' this year'));
-            $end = date('Y-m-d', strtotime('last day of '.$m.' this year'));
+        foreach (Enum::monthList() as $m) {
+            $start = date('Y-m-d', strtotime('first day of ' . $m . ' this year'));
+            $end = date('Y-m-d', strtotime('last day of ' . $m . ' this year'));
             $count = TbQuequ::find()
-                    ->where(['serviceid' => $serviceid])
-                    ->andWhere(['between', 'created_at', $start, $end])
-                    ->count();
+                ->where(['serviceid' => $serviceid])
+                ->andWhere(['between', 'created_at', $start, $end])
+                ->count();
             $items = ArrayHelper::merge($items, [intval($count)]);
         }
         return $items;
@@ -388,7 +403,8 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionClearCache() {
+    public function actionClearCache()
+    {
         $frontendAssetPath = Yii::getAlias('@frontend') . '/web/assets/';
         $backendAssetPath = Yii::getAlias('@backend') . '/web/assets/';
 
@@ -404,7 +420,8 @@ class SiteController extends Controller
         return Yii::$app->getResponse()->redirect(Yii::$app->getRequest()->referrer);
     }
 
-    public static function recursiveDelete($path) {
+    public static function recursiveDelete($path)
+    {
         if (is_file($path)) {
             return @unlink($path);
         } elseif (is_dir($path)) {
@@ -416,7 +433,8 @@ class SiteController extends Controller
         }
     }
 
-    public function actionPrint($size){
-        return $this->renderAjax('print',['size' => $size]);
+    public function actionPrint($size)
+    {
+        return $this->renderAjax('print', ['size' => $size]);
     }
 }
