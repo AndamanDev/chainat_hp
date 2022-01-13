@@ -12,8 +12,8 @@ var io = require("socket.io")(server, {
 var port = process.env.PORT || 3000;
 var bodyParser = require("body-parser");
 const ioclient = require("socket.io-client");
-//const socketclient = ioclient("http://localhost:3000", { path: "/socket.io" });
-const socketclient = ioclient("http://q.chainathospital.org", { path: "/node/socket.io" });
+const socketclient = ioclient("http://localhost:3000", { path: "/socket.io" });
+// const socketclient = ioclient("http://nginx", { path: "/node/socket.io" });
 const admin = require("firebase-admin");
 
 var serviceAccount = require("./chainathos-ef609-firebase-adminsdk-r7eqo-3cfdbddd2d.json");
@@ -22,7 +22,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://chainathos-ef609-default-rtdb.asia-southeast1.firebasedatabase.app",
 });
-//const socketclient = ioclient("http://q.chainathospital.org", { path: "/node/socket.io" });
+//const socketclient = ioclient("http://nginx", { path: "/node/socket.io" });
 
 socketclient
   .on("connect", () => {

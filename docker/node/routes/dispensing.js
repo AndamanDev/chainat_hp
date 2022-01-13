@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const axios = require('axios');
-axios.defaults.baseURL = 'http://q.chainathospital.org';
+axios.defaults.baseURL = 'http://nginx';
 
 router.post('/create', async function(req, res) {
     try {
