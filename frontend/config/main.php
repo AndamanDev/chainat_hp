@@ -16,7 +16,7 @@ return [
     'bootstrap' => ['log', 'dektrium\user\Bootstrap'],
     'controllerNamespace' => 'frontend\controllers',
     'name' => 'ระบบคิว รพ. ชัยนาทนเรนทร',
-    'defaultRoute' => '/site/index',
+    'defaultRoute' => '/app/display/display-list',
     'controllerMap' => [
         'file-manager-elfinder' => [
             'class' => mihaildev\elfinder\Controller::class,
