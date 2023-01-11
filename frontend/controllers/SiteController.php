@@ -192,6 +192,10 @@ class SiteController extends Controller
             'subseries2' => $subseries2,
         ]);
     }
+
+    public function actionIndex() {
+      return $this->render('index');
+    }
     /*
     public function actionIndex()
     {
