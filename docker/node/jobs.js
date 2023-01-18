@@ -5,7 +5,7 @@ let config = {
   host: process.env.REDIS_HOST,
   port: process.env.REDIS_PORT,
 }
-if (!devMode) {
+if (!devMode && process.env.REDIS_PASSWORD) {
   config = Object.assign(config, { password: process.env.REDIS_PASSWORD })
 }
 
