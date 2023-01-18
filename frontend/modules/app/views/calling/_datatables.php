@@ -829,12 +829,18 @@ if ($action == 'index') {
           "orderable" => false,
           "title" => "ดำเนินการ",
           "render" => new JsExpression('function ( data, type, row, meta ) {
+            var btndel = `<button type="button" disabled class="btn btn-sm btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> ลบ</button>`
             if(row.q_status_id === 4) {
-              return `<button class="btn btn-primary" disabled><i class="fa fa-edit"></i> แก้ไข</button>
-              <a href="javascript:void(0);" onclick="return window.open(\'/app/kiosk/print-ticket?id=${row.q_ids}\', \'myPrint\', \'width=800, height=600\')" class="btn btn-success"><i class="pe-7s-print"></i> พิมพ์บัตรคิว</a>`;
+              return `<button class="btn btn-sm btn-primary" disabled><i class="fa fa-edit"></i> แก้ไข</button>
+              <a href="javascript:void(0);" onclick="return window.open(\'/app/kiosk/print-ticket?id=${row.q_ids}\', \'myPrint\', \'width=800, height=600\')" class="btn btn-sm btn-success"><i class="pe-7s-print"></i> พิมพ์บัตรคิว</a>
+              ${btndel}`;
             }
-            return `<a href="/app/kiosk/update-queue?id=${row.q_ids}" class="btn btn-primary" role="modal-remote"><i class="fa fa-edit"></i> แก้ไข</a>
-            <a href="javascript:void(0);" onclick="return window.open(\'/app/kiosk/print-ticket?id=${row.q_ids}\', \'myPrint\', \'width=800, height=600\')" class="btn btn-success"><i class="pe-7s-print"></i> พิมพ์บัตรคิว</a>`;
+            if(row.q_status_id === 1) {
+              btndel = `<a href="/app/calling/del?id=${row.q_ids}" class="btn btn-sm btn-danger btn-del"><i class="fa fa-trash" aria-hidden="true"></i> ลบ</a>`
+            }
+            return `<a href="/app/kiosk/update-queue?id=${row.q_ids}" class="btn btn-sm btn-primary" role="modal-remote"><i class="fa fa-edit"></i> แก้ไข</a>
+            <a href="javascript:void(0);" onclick="return window.open(\'/app/kiosk/print-ticket?id=${row.q_ids}\', \'myPrint\', \'width=800, height=600\')" class="btn btn-sm btn-success"><i class="pe-7s-print"></i> พิมพ์บัตรคิว</a>
+            ${btndel}`;
           }')
         ],
       ],

@@ -68,6 +68,12 @@ class CallingController extends \yii\web\Controller
           ],
         ],
       ],
+      'verbs' => [
+        'class' => VerbFilter::className(),
+        'actions' => [
+            'del' => ['DELETE'],
+        ],
+    ],
     ];
   }
   /**
@@ -5286,8 +5292,29 @@ class CallingController extends \yii\web\Controller
       'counterservice_type' => $counterservice_typeid,
       'counterservice_status' => 1
     ])
-    ->asArray()
-    ->orderBy(['service_order' => SORT_ASC])
-    ->all();
+      ->asArray()
+      ->orderBy(['service_order' => SORT_ASC])
+      ->all();
+  }
+
+  public function actionDel($id)
+  {
+    $request = Yii::$app->request;
+    TbQuequ::findOne($id)->delete();
+    TbQtrans::deleteAll(['q_ids' => $id]);
+    TbCaller::deleteAll(['q_ids' => $id]);
+
+    if ($request->isAjax) {
+      /*
+            *   Process for ajax request
+            */
+      Yii::$app->response->format = Response::FORMAT_JSON;
+      return ['message' => 'deleted.'];
+    } else {
+      /*
+            *   Process for non-ajax request
+            */
+      return $this->refresh();
+    }
   }
 }

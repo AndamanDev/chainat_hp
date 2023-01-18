@@ -2318,3 +2318,46 @@ Queue.init()
 dt_tbqdata.on('xhr.dt', function (e, settings, json, xhr) {
   $("#count-qdata").html(_.get(json, 'total', 0));
 })
+
+$('#tb-qdata tbody').on('click', 'tr td a.btn-del', function (event) {
+  event.preventDefault()
+  var tr = $(this).closest('tr'),
+    url = $(this).attr('href')
+  if (tr.hasClass('child') && typeof dt_tbqdata.row(tr).data() === 'undefined') {
+    tr = $(this).closest('tr').prev()
+  }
+  var key = tr.data('key')
+  var data = dt_tbqdata.row(tr).data()
+  swal({
+    title: 'ยืนยันลบคิว ' + data.q_num + ' ?',
+    text: '',
+    type: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ยกเลิก',
+    allowOutsideClick: false,
+    showLoaderOnConfirm: true,
+    preConfirm: function () {
+      return new Promise(function (resolve, reject) {
+        $.ajax({
+          method: 'DELETE',
+          url: url,
+          dataType: 'json',
+          success: function (res) {
+            dt_tbqdata.ajax.reload()
+            Queue.toastrSuccess('ลบรายการคิวสำเร็จ')
+            resolve()
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            Queue.ajaxAlertError(errorThrown)
+          },
+        })
+      })
+    },
+  }).then((result) => {
+    if (result.value) {
+      //Confirm
+      swal.close()
+    }
+  })
+})
