@@ -403,8 +403,6 @@ var app = new Vue({
           var api = this.api()
           dtFnc.initConfirm(api)
           var count = api.data().count()
-          $('.count-calling').html(count)
-
           // var rows = api.rows( {page:"current"} ).nodes();
           // var columns = api.columns().nodes();
           // var last=null;
@@ -556,9 +554,15 @@ var app = new Vue({
           _this.callingLoading = true
         })
         .on('xhr.dt', function (e, settings, json, xhr) {
+          $('.count-calling').html(_.get(json, 'total', 0))
           _this.callingLoading = false
         })
         .on('draw.dt', function () {
+          var info = tbcalling.page.info();
+          tbcalling.column(0, { search: 'applied', order: 'applied', page: 'applied' }).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1 + info.start;
+          });
+
           var last = null
           var rows = tbcalling.rows({ page: 'current' }).nodes()
           var columns = tbcalling.columns().nodes()
@@ -649,7 +653,6 @@ var app = new Vue({
           var api = this.api()
           dtFnc.initConfirm(api)
           var count = api.data().count()
-          $('.count-hold').html(count)
 
           // var rows = api.rows({ page: 'current' }).nodes()
           // var columns = api.columns().nodes()
@@ -775,9 +778,15 @@ var app = new Vue({
           _this.holdLoading = true
         })
         .on('xhr.dt', function (e, settings, json, xhr) {
+          $('.count-hold').html(_.get(json, 'total', 0))
           _this.holdLoading = false
         })
         .on('draw.dt', function () {
+          var info = tbhold.page.info();
+          tbhold.column(0, { search: 'applied', order: 'applied', page: 'applied' }).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1 + info.start;
+          });
+
           var last = null
           var rows = tbhold.rows({ page: 'current' }).nodes()
           var columns = tbhold.columns().nodes()
