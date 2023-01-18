@@ -25,7 +25,8 @@ jPlayerAsset::register($this);
 $this->title = 'เรียกคิวจุดลงทะเบียน';
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerCss(<<<CSS
+$this->registerCss(
+  <<<CSS
 html.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown), body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     overflow-y: unset !important;
 }
@@ -170,112 +171,121 @@ footer.footer {
 .radio label input[type="radio"]:disabled + .cr {
     opacity: .5;
 }
+
+    
+.d-flex {
+  display: flex !important;
+}
+.justify-content-end {
+  justify-content: end !important;
+}
 CSS
 );
 $this->registerJs('var keySelected = [];', View::POS_HEAD);
 $this->registerJs('var baseUrl = ' . Json::encode(Url::base(true)) . '; ', View::POS_HEAD);
 $this->registerJs('var modelForm = ' . Json::encode($modelForm) . '; ', View::POS_HEAD);
 $this->registerJs('var modelProfile = ' . Json::encode($modelProfile) . '; ', View::POS_HEAD);
-$this->registerJs('var select2Data = ' . Json::encode(ArrayHelper::map(TbCounterservice::find()->where(['counterservice_status' => 1])->orderBy(['service_order' => SORT_ASC])->all(), 'counterserviceid', 'counterservice_name')) . '; ', View::POS_HEAD);
+$this->registerJs('var accesstoken = ' . Json::encode(Yii::$app->user->identity->getAuthKey()) . '; ', View::POS_HEAD);
+// $this->registerJs('var select2Data = ' . Json::encode(ArrayHelper::map(TbCounterservice::find()->where(['counterservice_status' => 1])->orderBy(['service_order' => SORT_ASC])->all(), 'counterserviceid', 'counterservice_name')) . '; ', View::POS_HEAD);
 ?>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="hpanel">
-                <?php
-                echo Tabs::widget([
-                    'items' => [
-                        [
-                            'label' => '<i class="pe-7s-volume"></i> เรียกคิว',
-                            'active' => true,
-                            'options' => ['id' => 'tab-1'],
-                            'linkOptions' => ['style' => 'font-size: 14px;'],
-                            'headerOptions' => ['class' => 'tab-1'],
-                        ],
-                        [
-                            'label' => '<i class="fa fa-list"></i> รายการคิว ' . Html::tag('span', '0', ['id' => 'count-qdata', 'class' => 'badge']),
-                            'options' => ['id' => 'tab-2'],
-                            'linkOptions' => ['style' => 'font-size: 14px;'],
-                            'headerOptions' => ['class' => 'tab-2'],
-                        ],
-                        // [
-                        //     'label' => '<i class="fa fa-users"></i> รายชื่อผู้ป่วย ' . Html::tag('span', '0', ['id' => 'count-patients', 'class' => 'badge']),
-                        //     'options' => ['id' => 'tab-3'],
-                        //     'linkOptions' => ['style' => 'font-size: 14px;'],
-                        // ],
-                    ],
-                    'options' => ['class' => 'nav nav-tabs'],
-                    'encodeLabels' => false,
-                    'renderTabContent' => false,
-                ]);
-                ?>
-                <div class="tab-content">
-                    <div id="tab-1" class="tab-pane active">
-                        <div class="panel-body" style="padding-bottom: 0px;">
-                            <div class="row">
-                                <div class="col-md-12 text-center text-tablet-mode" style="display: none;">
-                                    <p><span style="font-weight: bold;text-align: center;font-size: 18px;">จุดลงทะเบียน</span></p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-8" >
+<div id="app"></div>
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12">
+    <div class="hpanel">
+      <?php
+      echo Tabs::widget([
+        'items' => [
+          [
+            'label' => '<i class="pe-7s-volume"></i> เรียกคิว',
+            'active' => true,
+            'options' => ['id' => 'tab-1'],
+            'linkOptions' => ['style' => 'font-size: 14px;'],
+            'headerOptions' => ['class' => 'tab-1'],
+          ],
+          [
+            'label' => '<i class="fa fa-list"></i> รายการคิว ' . Html::tag('span', '0', ['id' => 'count-qdata', 'class' => 'badge']),
+            'options' => ['id' => 'tab-2'],
+            'linkOptions' => ['style' => 'font-size: 14px;'],
+            'headerOptions' => ['class' => 'tab-2'],
+          ],
+          // [
+          //     'label' => '<i class="fa fa-users"></i> รายชื่อผู้ป่วย ' . Html::tag('span', '0', ['id' => 'count-patients', 'class' => 'badge']),
+          //     'options' => ['id' => 'tab-3'],
+          //     'linkOptions' => ['style' => 'font-size: 14px;'],
+          // ],
+        ],
+        'options' => ['class' => 'nav nav-tabs'],
+        'encodeLabels' => false,
+        'renderTabContent' => false,
+      ]);
+      ?>
+      <div class="tab-content">
+        <div id="tab-1" class="tab-pane active">
+          <div class="panel-body" style="padding-bottom: 0px;">
+            <div class="row">
+              <div class="col-md-12 text-center text-tablet-mode" style="display: none;">
+                <p><span style="font-weight: bold;text-align: center;font-size: 18px;">จุดลงทะเบียน</span></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-8">
 
-                                    <!-- Begin From -->
-                                    <?php echo $this->render('_form_medical', ['modelForm' => $modelForm]); ?>
-                                    <!-- End Form -->
-                                    <div class="row">
-                                        <div class="col-xs-12 col-sm-12 col-md-12" >
-                                            <!-- Begin Panel -->
-                                            <div class="hpanel">
-                                                <?php
-                                                echo Tabs::widget([
-                                                    'items' => [
-                                                        [
-                                                            'label' => 'คิวรอเรียก ' . Html::tag('span', '0', ['id' => 'count-waiting', 'class' => 'badge count-waiting']),
-                                                            'active' => true,
-                                                            'options' => ['id' => 'tab-watting'],
-                                                            'linkOptions' => ['style' => 'font-size: 14px;'],
-                                                            'headerOptions' => ['class' => 'tab-watting'],
-                                                        ],
-                                                        [
-                                                            'label' => 'กำลังเรียก ' . Html::tag('span', '0', ['id' => 'count-calling', 'class' => 'badge count-calling']),
-                                                            'options' => ['id' => 'tab-calling'],
-                                                            'linkOptions' => ['style' => 'font-size: 14px;', 'class' => 'tabx'],
-                                                            'headerOptions' => ['class' => 'tab-calling'],
-                                                        ],
-                                                        [
-                                                            'label' => 'พักคิว ' . Html::tag('span', '0', ['id' => 'count-hold', 'class' => 'badge count-hold']),
-                                                            'options' => ['id' => 'tab-hold'],
-                                                            'linkOptions' => ['style' => 'font-size: 14px;'],
-                                                            'headerOptions' => ['class' => 'tab-hold']
-                                                        ],
-                                                    ],
-                                                    'options' => ['class' => 'nav nav-tabs','id' => 'tab-menu-default'],
-                                                    'encodeLabels' => false,
-                                                    'renderTabContent' => false,
-                                                ]);
-                                                ?>
-                                                <div class="tab-content">
-                                                    <?php echo $this->render('_table_medical'); ?>
-                                                </div>
-                                            </div><!-- End hpanel -->
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-sm-12 col-md-4">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="clast-queue">
-                                                <ul class="list-group">
-                                                    <li class="list-group-item" style="font-size:18px;">
-                                                <span class="badge badge-primary" style="font-size:18px;"
-                                                      id="last-queue">-</span>
-                                                        คิวที่เรียกล่าสุด
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php /*
+                <!-- Begin From -->
+                <?php echo $this->render('_form_medical', ['modelForm' => $modelForm]); ?>
+                <!-- End Form -->
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12 col-md-12">
+                    <!-- Begin Panel -->
+                    <div class="hpanel">
+                      <?php
+                      echo Tabs::widget([
+                        'items' => [
+                          [
+                            'label' => 'คิวรอเรียก ' . Html::tag('span', '0', ['id' => 'count-waiting', 'class' => 'badge count-waiting']),
+                            'active' => true,
+                            'options' => ['id' => 'tab-watting'],
+                            'linkOptions' => ['style' => 'font-size: 14px;'],
+                            'headerOptions' => ['class' => 'tab-watting'],
+                          ],
+                          [
+                            'label' => 'กำลังเรียก ' . Html::tag('span', '0', ['id' => 'count-calling', 'class' => 'badge count-calling']),
+                            'options' => ['id' => 'tab-calling'],
+                            'linkOptions' => ['style' => 'font-size: 14px;', 'class' => 'tabx'],
+                            'headerOptions' => ['class' => 'tab-calling'],
+                          ],
+                          [
+                            'label' => 'พักคิว ' . Html::tag('span', '0', ['id' => 'count-hold', 'class' => 'badge count-hold']),
+                            'options' => ['id' => 'tab-hold'],
+                            'linkOptions' => ['style' => 'font-size: 14px;'],
+                            'headerOptions' => ['class' => 'tab-hold']
+                          ],
+                        ],
+                        'options' => ['class' => 'nav nav-tabs', 'id' => 'tab-menu-default'],
+                        'encodeLabels' => false,
+                        'renderTabContent' => false,
+                      ]);
+                      ?>
+                      <div class="tab-content">
+                        <?php echo $this->render('_table_medical'); ?>
+                      </div>
+                    </div><!-- End hpanel -->
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-4">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="clast-queue">
+                      <ul class="list-group">
+                        <li class="list-group-item" style="font-size:18px;">
+                          <span class="badge badge-primary" style="font-size:18px;" id="last-queue">-</span>
+                          คิวที่เรียกล่าสุด
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <?php /*
                                     <div class="hpanel hpanel-ticket">
                                         <div class="panel-heading hbuilt">
                                             <div class="panel-tools">
@@ -291,40 +301,43 @@ $this->registerJs('var select2Data = ' . Json::encode(ArrayHelper::map(TbCounter
                                             <?php endif; ?>
                                         </div>
                                     </div>
-                                    */?>
-                                </div>
-                            </div>
-                        </div><!-- End panel body -->
-                    </div><!-- End Tab1 -->
-                    <div id="tab-2" class="tab-pane">
-                        <div class="panel-body">
-                            <!-- <div class="row" id="row-search">
+                                    */ ?>
+              </div>
+            </div>
+          </div><!-- End panel body -->
+        </div><!-- End Tab1 -->
+        <div id="tab-2" class="tab-pane">
+          <div class="panel-body">
+            <!-- <div class="row" id="row-search">
                                 <div class="col-md-6">
                                     <input type="text" class="form-control input-lg" name="search" id="search" placeholder="ค้นหาข้อมูล" style="background-color: #434a54;color: #ffffff;">
                                 </div>
                             </div> -->
-                            <?php
-                            echo Table::widget([
-                                'tableOptions' => ['class' => 'table table-hover table-bordered table-condensed', 'width' => '100%', 'id' => 'tb-qdata'],
-                                'beforeHeader' => [
-                                    [
-                                        'columns' => [
-                                            ['content' => '#', 'options' => ['style' => 'text-align: center;']],
-                                            ['content' => 'คิว', 'options' => ['style' => 'text-align: center;']],
-                                            ['content' => 'HN', 'options' => ['style' => 'text-align: center;']],
-                                            ['content' => 'ชื่อ-นามสกุล', 'options' => ['style' => 'text-align: center;']],
-                                            ['content' => 'ประเภท', 'options' => ['style' => 'text-align: center;']],
-                                            ['content' => 'ช่องบริการ', 'options' => ['style' => 'text-align: center;']],
-                                            ['content' => 'สถานะ', 'options' => ['style' => 'text-align: center;']],
-                                            ['content' => 'ดำเนินการ', 'options' => ['style' => 'text-align: center;']],
-                                        ]
-                                    ]
-                                ],
-                            ]);
-                            ?>
-                        </div>
-                    </div><!-- End Tab2 -->
-                   <?php /*
+            <?php
+            echo Table::widget([
+              'tableOptions' => ['class' => 'table table-hover table-bordered table-condensed', 'width' => '100%', 'id' => 'tb-qdata'],
+              'beforeHeader' => [
+                [
+                  'columns' => [
+                    ['content' => '#', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'ID', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'คิว', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'HN', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'ชื่อ-นามสกุล', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'ประเภท', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'ช่องบริการ', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'สถานะ', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'วันที่', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'เวลา', 'options' => ['style' => 'text-align: center;']],
+                    ['content' => 'ดำเนินการ', 'options' => ['style' => 'text-align: center;']],
+                  ]
+                ]
+              ],
+            ]);
+            ?>
+          </div>
+        </div><!-- End Tab2 -->
+        <?php /*
                     <div id="tab-3" class="tab-pane">
                         <div class="panel-body">
                             <div class="row" style="margin-bottom: 10px;">
@@ -370,57 +383,77 @@ $this->registerJs('var select2Data = ' . Json::encode(ArrayHelper::map(TbCounter
                             ?>
                         </div>
                     </div><!-- End Tab3 -->
-                    */?>
-                </div>
-            </div><!-- End hpanel -->
-        </div>
+                    */ ?>
+      </div>
+    </div><!-- End hpanel -->
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12">
+    <div class="footer footer-tabs" style="position: fixed;padding: 20px 18px;z-index: 3;">
+      <div class="hpanel">
+        <?php
+        $icon = '<p style="margin: 0"><i class="fa fa-list" style="font-size: 1.5em;"></i> </p>';
+        echo Tabs::widget([
+          'items' => [
+            [
+              'label' => $icon . ' คิวรอเรียก ' . Html::tag('span', '0', ['id' => 'count-waiting', 'class' => 'badge badge-info count-waiting']),
+              'active' => true,
+              'options' => ['id' => 'tab-watting'],
+              'linkOptions' => ['style' => 'font-size: 14px;'],
+              'headerOptions' => ['style' => 'width: 33.33%;bottom: 20px;', 'class' => 'tab-watting text-center'],
+            ],
+            [
+              'label' => $icon . ' กำลังเรียก ' . Html::tag('span', '0', ['id' => 'count-calling', 'class' => 'badge badge-info count-calling']),
+              'options' => ['id' => 'tab-calling'],
+              'linkOptions' => ['style' => 'font-size: 14px;', 'class' => 'tabx'],
+              'headerOptions' => ['style' => 'width: 33.33%;bottom: 20px;', 'class' => 'tab-calling text-center'],
+            ],
+            [
+              'label' => $icon . ' พักคิว ' . Html::tag('span', '0', ['id' => 'count-hold', 'class' => 'badge badge-info count-hold']),
+              'options' => ['id' => 'tab-hold'],
+              'linkOptions' => ['style' => 'font-size: 14px;'],
+              'headerOptions' => ['style' => 'width: 33.33%;bottom: 20px;', 'class' => 'tab-hold text-center']
+            ],
+          ],
+          'options' => ['class' => 'nav nav-tabs', 'id' => 'tab-menu'],
+          'encodeLabels' => false,
+          'renderTabContent' => false,
+        ]);
+        ?>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12" >
-            <div class="footer footer-tabs" style="position: fixed;padding: 20px 18px;z-index: 3;">
-                <div class="hpanel">
-                    <?php
-                    $icon = '<p style="margin: 0"><i class="fa fa-list" style="font-size: 1.5em;"></i> </p>';
-                    echo Tabs::widget([
-                        'items' => [
-                            [
-                                'label' => $icon.' คิวรอเรียก ' . Html::tag('span', '0', ['id' => 'count-waiting', 'class' => 'badge badge-info count-waiting']),
-                                'active' => true,
-                                'options' => ['id' => 'tab-watting'],
-                                'linkOptions' => ['style' => 'font-size: 14px;'],
-                                'headerOptions' => ['style' => 'width: 33.33%;bottom: 20px;','class' => 'tab-watting text-center'],
-                            ],
-                            [
-                                'label' => $icon.' กำลังเรียก ' . Html::tag('span', '0', ['id' => 'count-calling', 'class' => 'badge badge-info count-calling']),
-                                'options' => ['id' => 'tab-calling'],
-                                'linkOptions' => ['style' => 'font-size: 14px;', 'class' => 'tabx'],
-                                'headerOptions' => ['style' => 'width: 33.33%;bottom: 20px;','class' => 'tab-calling text-center'],
-                            ],
-                            [
-                                'label' => $icon.' พักคิว ' . Html::tag('span', '0', ['id' => 'count-hold', 'class' => 'badge badge-info count-hold']),
-                                'options' => ['id' => 'tab-hold'],
-                                'linkOptions' => ['style' => 'font-size: 14px;'],
-                                'headerOptions' => ['style' => 'width: 33.33%;bottom: 20px;','class' => 'tab-hold text-center']
-                            ],
-                        ],
-                        'options' => ['class' => 'nav nav-tabs','id' => 'tab-menu'],
-                        'encodeLabels' => false,
-                        'renderTabContent' => false,
-                    ]);
-                    ?>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- jPlayer -->
-    <div id="jplayer_notify"></div>
+  </div>
+</div>
+<!-- jPlayer -->
+<div id="jplayer_notify"></div>
 
 <?php
+$this->registerJsFile(
+  YII_ENV_DEV ? '@web/js/vue.js' : '@web/js/vue.min.js',
+  ['depends' => [\yii\web\JqueryAsset::class]]
+);
 echo $this->render('modal');
 echo $this->render('_datatables', ['modelForm' => $modelForm, 'modelProfile' => $modelProfile, 'action' => Yii::$app->controller->action->id]);
-$this->registerJsFile('https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js');
+$this->registerJsFile(
+  '@web/js/lodash.min.js',
+  ['depends' => [\yii\web\JqueryAsset::class]]
+);
+$this->registerJsFile(
+  '@web/js/vuex-persistedstate.umd.js',
+  ['depends' => [\yii\web\JqueryAsset::class]]
+);
+$this->registerJsFile(
+  '@web/js/vuex.js',
+  ['depends' => [\yii\web\JqueryAsset::class]]
+);
+$this->registerJsFile(
+  '@web/vendor/moment/min/moment-with-locales.min.js',
+  ['depends' => [\yii\web\JqueryAsset::class]]
+);
 $this->registerJs($this->render('script-medical.js'));
-$this->registerJs(<<<JS
+$this->registerJs(
+  <<<JS
 //search data
 $('input#search').on( 'keyup', function () {
     dt_tbqdata.search( this.value ).draw();
@@ -497,6 +530,22 @@ $(document).ready(function() {
         } );
     } ).draw();
 } );
+
+// dt_tbqdata.on('draw.dt order.dt search.dt', function (e, settings) {
+//   var info = dt_tbqdata.page.info();
+//   console.log(info);
+//   let i = info.start === 0 ? 1 : info.start;
+
+//   dt_tbqdata.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+//       this.data(i++);
+//   });
+// }).draw();
+dt_tbqdata.on('draw.dt', function () {
+    var info = dt_tbqdata.page.info();
+    dt_tbqdata.column(0, { search: 'applied', order: 'applied', page: 'applied' }).nodes().each(function (cell, i) {
+        cell.innerHTML = i + 1 + info.start;
+    });
+});
 
 
 JS

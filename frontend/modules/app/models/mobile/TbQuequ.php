@@ -184,7 +184,7 @@ class TbQuequ extends \yii\db\ActiveRecord
                 ->select(['*'])
                 ->from('tb_quequ')
                 ->where(['tb_quequ.serviceid' => $serviceid, 'tb_quequ.q_status_id' => 1])
-                ->andWhere('tb_quequ.q_ids > :q_ids', [':q_ids' => $last['q_ids']])
+                ->andWhere('tb_quequ.q_ids < :q_ids', [':q_ids' => $last['q_ids']])
                 ->limit($limit)
                 ->all();
             if (count($rows) == $limit) {

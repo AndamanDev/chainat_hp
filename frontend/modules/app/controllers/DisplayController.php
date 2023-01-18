@@ -129,7 +129,7 @@ class DisplayController extends \yii\web\Controller
                     ->leftJoin('tb_doctor', 'tb_doctor.doc_id = tb_quequ.doctor_id')
                     ->where(['tb_caller.caller_ids' => $caller_ids, 'tb_caller.call_status' => 'calling'])
                     ->andWhere('tb_quequ.q_num LIKE :q_num')
-                    ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
+                    ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                     ->addParams([':q_num' => $m . '%'])
                     ->orderBy(['tb_caller.call_timestp' => SORT_ASC])
                     ->one();
@@ -149,7 +149,7 @@ class DisplayController extends \yii\web\Controller
                         ->where(['tb_caller.caller_ids' => $caller_ids, 'tb_caller.call_status' => 'callend'])
                         ->andWhere('tb_quequ.q_num LIKE :q_num')
                         ->addParams([':q_num' => $m . '%'])
-                        ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
+                        ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                         ->orderBy(['tb_caller.call_timestp' => SORT_DESC])
                         ->one();
                     if ($rows) {
@@ -374,7 +374,7 @@ class DisplayController extends \yii\web\Controller
                     'tb_counterservice_type.counterservice_typeid' => $config['counterservice_id'],
                     'tb_service.serviceid' => $config['service_id']
                 ])
-                ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
+                ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                 ->orderBy('tb_caller.call_timestp DESC');
 
             $dataProvider = new ActiveDataProvider([
@@ -659,7 +659,7 @@ class DisplayController extends \yii\web\Controller
                     ])
                     //->where(['tb_caller.caller_ids' => $caller_ids,'tb_caller.call_status' => 'calling'])
                     ->andWhere('tb_quequ.q_num LIKE :q_num')
-                    ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
+                    ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                     ->addParams([':q_num' => $prefix . '%'])
                     ->orderBy(['tb_caller.call_timestp' => SORT_DESC])
                     ->groupBy('tb_quequ.q_ids')
@@ -725,7 +725,7 @@ class DisplayController extends \yii\web\Controller
                 'tb_counterservice_type.counterservice_typeid' => $config['counterservice_id'],
                 'tb_service.serviceid' => $config['service_id']
             ])
-            ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
+            ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
             ->limit(empty($config['display_limit']) ? 2 : $config['display_limit'])
             ->orderBy([
                 'tb_caller.call_timestp' => SORT_DESC
@@ -763,7 +763,7 @@ class DisplayController extends \yii\web\Controller
                 'tb_counterservice_type.counterservice_typeid' => $config['counterservice_id'],
                 'tb_service.serviceid' => $config['service_id']
             ])
-            ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
+            ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
             ->orderBy([
                 'tb_caller.call_timestp' => SORT_ASC
             ])
@@ -798,7 +798,7 @@ class DisplayController extends \yii\web\Controller
                         'tb_counterservice.counterservice_type' => $counters
                     ])
                     ->andWhere('tb_quequ.q_num LIKE :q_num')
-                    ->andWhere('DATE( tb_quequ.q_timestp ) = CURRENT_DATE')
+                    ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                     ->addParams([':q_num' => $prefix . '%'])
                     ->orderBy(['tb_caller.call_timestp' => SORT_DESC])
                     ->one();

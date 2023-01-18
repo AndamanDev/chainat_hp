@@ -2,10 +2,11 @@ var express = require("express")
 var qs = require("qs")
 var router = express.Router()
 const axios = require("axios")
-axios.defaults.baseURL = "http://nginx"
+const _ = require('lodash')
+axios.defaults.baseURL = process.env.WEB_BASE_URL
 //axios.defaults.baseURL = "http://queue-chainat.local";
 const config = {
-	baseURL: "http://nginx"
+	baseURL: process.env.WEB_BASE_URL
 }
 
 router.get("/calling-queue", async function (req, res) {
@@ -15,7 +16,7 @@ router.get("/calling-queue", async function (req, res) {
 		req.io.emit("call", response.data)
 		res.send(response.data)
 	} catch (error) {
-		res.status(error.response.status || 500).send(error.response.data)
+		res.error(error)
 	}
 })
 
@@ -26,7 +27,7 @@ router.get("/hold-queue", async function (req, res) {
 		req.io.emit("hold", response.data)
 		res.send(response.data)
 	} catch (error) {
-		res.status(error.response.status || 500).send(error.response.data)
+		res.error(error)
 	}
 })
 
@@ -37,7 +38,7 @@ router.get("/end-queue", async function (req, res) {
 		req.io.emit("finish", response.data)
 		res.send(response.data)
 	} catch (error) {
-		res.status(error.response.status || 500).send(error.response.data)
+		res.error(error)
 	}
 })
 
@@ -48,7 +49,7 @@ router.get("/send-to-doctor", async function (req, res) {
 		req.io.emit("finish", response.data)
 		res.send(response.data)
 	} catch (error) {
-		res.status(error.response.status || 500).send(error.response.data)
+		res.error(error)
 	}
 })
 
@@ -59,7 +60,7 @@ router.get("/waiting-doctor", async function (req, res) {
 		req.io.emit("finish", response.data)
 		res.send(response.data)
 	} catch (error) {
-		res.status(error.response.status || 500).send(error.response.data)
+		res.error(error)
 	}
 })
 
@@ -70,7 +71,7 @@ router.get("/waiting-pharmacy", async function (req, res) {
 		req.io.emit("finish", response.data)
 		res.send(response.data)
 	} catch (error) {
-		res.status(error.response.status || 500).send(error.response.data)
+		res.error(error)
 	}
 })
 

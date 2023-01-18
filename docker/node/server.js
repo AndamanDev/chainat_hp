@@ -1,22 +1,46 @@
 require("dotenv").config();
-var app = require("express")();
-var cors = require("cors");
-var server = require("http").Server(app);
-var io = require("socket.io")(server, {
+
+const app = require("express")();
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
+const redisClient = require('./config/redis')
+const multiparty = require("multiparty");
+const cors = require("cors");
+const corsMiddleware = require('./middlewares/cors')
+const assignId = require('./middlewares/assign-id')
+const compression = require('compression')
+const helmet = require("helmet");
+const RateLimitRedis = require('rate-limit-redis')
+const RateLimit = require('express-rate-limit')
+const bodyParser = require("body-parser");
+const responseTime = require('response-time')
+const pinoHttp = require('pino-http')
+const pino = require('pino')
+const customResponse = require('./middlewares/custom-response')
+const accessLogStream = require('./logger/access-stream')
+const config = require('./config')
+const cron = require('node-cron');
+const glob = require("glob")
+const path = require('path')
+const fs = require('fs')
+const passport = require('passport')
+const server = require("http").Server(app);
+const io = require("socket.io")(server, {
   allowEIO3: true,
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
 });
-var port = process.env.PORT || 3000;
-var bodyParser = require("body-parser");
+const port = process.env.PORT || 3000;
+const host = process.env.HOST || '0.0.0.0';
+const error = require('./middlewares/error')
 const ioclient = require("socket.io-client");
 const socketclient = ioclient("http://localhost:3000", { path: "/socket.io" });
 // const socketclient = ioclient("http://nginx", { path: "/node/socket.io" });
 const admin = require("firebase-admin");
 
-var serviceAccount = require("./chainathos-ef609-firebase-adminsdk-r7eqo-3cfdbddd2d.json");
+const serviceAccount = require("./chainathos-ef609-firebase-adminsdk-r7eqo-3cfdbddd2d.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -32,38 +56,110 @@ socketclient
     console.log(error); // "G5p5..."
   });
 
-// require the module
-
-var multiparty = require("multiparty");
+app.use(assignId);
+app.use(compression())
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+)
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(corsMiddleware);
 
-app.use(bodyParser.json());
+/**
+ * Logger
+ */
+const logger = require('pino-http')({
+  logger: pino(config.pinoLogger, accessLogStream),
+  genReqId: (req) => {
+    return req.id
+  },
+  customLogLevel: function (req, res, err) {
+    if (res.statusCode >= 400 && res.statusCode < 500) {
+      return 'warn'
+    } else if (res.statusCode >= 500 || err) {
+      return 'error'
+    }
+    return 'info'
+  },
+  serializers: {
+    req(req) {
+      req.body = req.body;
+      return req;
+    },
+  },
+})
 
-app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/index.html");
-});
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-
+app.use(function (req, res, next) {
   req.io = socketclient;
+  logger(req, res)
   next();
 });
+/**
+ * Rate Limit
+ */
+const limiter = new RateLimit({
+  store: new RateLimitRedis({ client: redisClient }),
+  max: 5000, // limit each IP to 100 requests per windowMs
+  delayMs: 0, // disable delaying - full speed until the max limit is reached
+})
+app.use(limiter)
 
-var indexRouter = require("./routes/index");
-var callingRouter = require("./routes/calling");
-var dispensingRouter = require("./routes/dispensing");
-var kioskRouter = require("./routes/kiosk");
-var messageQueue = require("./jobs")(admin);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      // httpOnly: true,
+      // secure: true,
+      // domain: process.env.BASE_URL,
+      // //  new Date(Date.now() + 60 * 60 * 1000) Cookie will expire in 1 hour from when it's generated
+      // expires: 24 * 60 * 60 * 1000, // 24 hours
+    },
+    name: process.env.SESSION_NAME,
+  })
+)
+require('./config/passport')
+app.use(passport.initialize());
+app.use(passport.session());
+
+/**
+ * Response time
+ */
+app.use(responseTime())
+
+/**
+ * custom response
+ */
+app.use(customResponse())
+
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + "/index.html");
+});
+
+const indexRouter = require("./routes/index");
+const callingRouter = require("./routes/calling");
+const dispensingRouter = require("./routes/dispensing");
+const kioskRouter = require("./routes/v1/kiosk");
+const callingV1Router = require("./routes/v1/calling");
+const examinationV1Router = require("./routes/v1/examination");
+const v1Router = require("./routes/v1");
+const messageQueue = require("./jobs")(admin);
 
 app.use("/api", indexRouter);
+app.use("/v1", v1Router);
 app.use("/api/calling", callingRouter);
 app.use("/api/dispensing", dispensingRouter);
 app.use("/api/kiosk", kioskRouter);
+app.use("/api/v1/calling", callingV1Router);
+app.use("/api/v1/examination", examinationV1Router);
 
-app.post("/api/send-message", async function(req, res) {
+app.post("/api/send-message", async function (req, res) {
   try {
     await admin.messaging().send(req.body.message);
 
@@ -73,7 +169,7 @@ app.post("/api/send-message", async function(req, res) {
   }
 });
 
-app.post("/api/add-message", async function(req, res) {
+app.post("/api/add-message", async function (req, res) {
   try {
     await messageQueue.add(req.body.message);
     res.status(200).send({ message: "Successfully sent message." });
@@ -108,80 +204,80 @@ const EVENTS = {
 };
 
 //connection
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
   //ลงทะเบียนผู้ป่วย
-  socket.on("register", function(res) {
+  socket.on("register", function (res) {
     socket.broadcast.emit("register", res);
   });
 
   //เรียกคิว
-  socket.on("call-screening-room", function(res) {
+  socket.on("call-screening-room", function (res) {
     socket.broadcast.emit("call-screening-room", res);
   });
 
   //Hold คิว
-  socket.on("hold-screening-room", function(res) {
+  socket.on("hold-screening-room", function (res) {
     socket.broadcast.emit("hold-screening-room", res);
   });
 
   //End คิว
-  socket.on("endq-screening-room", function(res) {
+  socket.on("endq-screening-room", function (res) {
     socket.broadcast.emit("endq-screening-room", res);
   });
 
   //เรียกคิว
-  socket.on("call-examination-room", function(res) {
+  socket.on("call-examination-room", function (res) {
     socket.broadcast.emit("call-examination-room", res);
   });
 
   //Hold คิว
-  socket.on("hold-examination-room", function(res) {
+  socket.on("hold-examination-room", function (res) {
     socket.broadcast.emit("hold-examination-room", res);
   });
 
   //End คิว
-  socket.on("endq-examination-room", function(res) {
+  socket.on("endq-examination-room", function (res) {
     socket.broadcast.emit("endq-examination-room", res);
   });
 
   //เรียกคิว
-  socket.on("call-medicine-room", function(res) {
+  socket.on("call-medicine-room", function (res) {
     socket.broadcast.emit("call-medicine-room", res);
   });
 
   //Hold คิว
-  socket.on("hold-medicine-room", function(res) {
+  socket.on("hold-medicine-room", function (res) {
     socket.broadcast.emit("hold-medicine-room", res);
   });
 
   //End คิว
-  socket.on("endq-medicine-room", function(res) {
+  socket.on("endq-medicine-room", function (res) {
     socket.broadcast.emit("endq-medicine-room", res);
   });
 
-  socket.on("transfer-examination-room", function(res) {
+  socket.on("transfer-examination-room", function (res) {
     socket.broadcast.emit("transfer-examination-room", res);
   });
   //สร้างรายการรับยาใกล้บ้าน
-  socket.on("create-drug-dispensing", function(res) {
+  socket.on("create-drug-dispensing", function (res) {
     io.emit("create-drug-dispensing", res);
   });
 
   //Display
-  socket.on("display", function(res) {
+  socket.on("display", function (res) {
     socket.broadcast.emit("display", res);
   });
 
-  socket.on("call", function(res) {
+  socket.on("call", function (res) {
     socket.broadcast.emit("call", res);
   });
-  socket.on("recall", function(res) {
+  socket.on("recall", function (res) {
     socket.broadcast.emit("recall", res);
   });
-  socket.on("hold", function(res) {
+  socket.on("hold", function (res) {
     socket.broadcast.emit("hold", res);
   });
-  socket.on("finish", function(res) {
+  socket.on("finish", function (res) {
     socket.broadcast.emit("finish", res);
   });
 
@@ -232,16 +328,16 @@ io.on("connection", function(socket) {
     });
   });
 
-  app.post("/api/save-profile", function(req, res) {
+  app.post("/api/save-profile", function (req, res) {
     if (!req.body) return res.sendStatus(400);
 
     var form = new multiparty.Form();
 
-    form.on("error", function(err) {
+    form.on("error", function (err) {
       console.log("Error parsing form: " + err.stack);
     });
 
-    form.parse(req, function(err, fields, files) {
+    form.parse(req, function (err, fields, files) {
       //console.log('fields: %@', fields);
       socket.broadcast.emit("read-card", fields);
     });
@@ -251,11 +347,34 @@ io.on("connection", function(socket) {
     });
   });
 
-  socket.on("disconnect", function() {
+  socket.on("disconnect", function () {
     io.emit("disconnected");
   });
 });
 
-server.listen(port, function() {
-  console.log("listening on *:" + port);
+// if error is not an instanceOf APIError, convert it.
+app.use(error.converter)
+
+// catch 404 and forward to error handler
+app.use(error.notFound)
+
+// error handler, send stacktrace only during development
+app.use(error.handler)
+
+cron.schedule('0 1 * * 7', () => {
+  glob("./logs/**/*.log", {}, async (er, files) => {
+    if (files.length) {
+      for (let i = 0; i < files.length; i++) {
+        const filePath = files[i];
+        const filename = path.basename(filePath)
+        if (!['error-message.log', 'message.log', 'access.log', 'error.log'].includes(filename)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    }
+  })
+});
+
+server.listen(port, host, function () {
+  console.log(`listening on http://${host}:${port}`);
 });

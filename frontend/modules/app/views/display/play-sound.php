@@ -324,7 +324,7 @@ var myPlaylist = new jPlayerPlaylist({
             setTimeout(function(){
                 Display.blink(data);
             }, 500);
-            // socket.emit('display', data);//sending data
+            socket.emit('display', data);//sending data
             //toastr.success(' ' + data.title, 'Calling!', {timeOut: 5000,positionClass: "toast-top-right"});
         }
         if(data.wav.indexOf("Prompt1_Sir.wav") >= 0 || data.wav.indexOf("Prompt2_Sir.wav") >= 0){
@@ -402,7 +402,6 @@ $("#jplayer_inspector").jPlayerInspector({jPlayer:$(jPlayerid)});
 //Socket Event
 socket
 .on('call', (res) => {
-    console.log(res)
     if(model != null && Object.keys(model).length && myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0){
         var counters = (model.counterserviceid).split(',').map(v => parseInt(v));
         if(jQuery.inArray(parseInt(res.counter.counterserviceid), counters) != -1) {
@@ -489,7 +488,7 @@ Queue = {
     addMedia: function(res){
         $.each(res.sound, function( index, sound ) {
             myPlaylist.add({
-                title: res.data.qnumber,
+                title: res.modelQueue.q_num,
                 artist: res,
                 wav: sound
             });

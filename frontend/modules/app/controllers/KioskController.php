@@ -7,6 +7,7 @@ use frontend\modules\app\components\HisQuery;
 use frontend\modules\app\models\mobile\TbQuequ;
 use frontend\modules\app\models\Patient;
 use frontend\modules\app\models\TbCaller;
+use frontend\modules\app\models\TbCounterservice;
 use frontend\modules\app\models\TbDrugDispensing;
 use frontend\modules\app\models\TbKiosk;
 use frontend\modules\app\models\TbQtrans;
@@ -28,12 +29,12 @@ use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
-use yii\httpclient\Client;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\httpclient\Client;
 
 class KioskController extends \yii\web\Controller
 {
@@ -86,6 +87,95 @@ class KioskController extends \yii\web\Controller
     }
 
     return parent::beforeAction($action);
+  }
+
+  /** @inheritdoc */
+  public function actions()
+  {
+    return [
+      'queue-list' => [
+        'class' => 'common\actions\DataTableAction',
+        'query' => $this->getQueueList(),
+        'extraColumns' => [],
+        'applyFilter' => function ($query, $columns, $search) {
+          $queueschemas = TbQuequ::getTableSchema()->columns;
+          $queuetransschemas = TbQtrans::getTableSchema()->columns;
+          $statusschemas = TbServiceStatus::getTableSchema()->columns;
+          $counterschemas = TbCounterservice::getTableSchema()->columns;
+          foreach ($columns as $column) {
+            if ($column['searchable'] == 'true' && $column['data']) {
+              $value = empty($search['value']) ? $column['search']['value'] : $search['value'];
+              if (empty($search['value'])) {
+                if ($column['data'] == 'q_ids') {
+                  $query->andFilterWhere(['like', 'tb_quequ.q_ids', $value]);
+                }
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $queueschemas) !== false) {
+                  $query->andFilterWhere(['=', 'tb_quequ.' . $column['data'], $value]);
+                }
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $queuetransschemas) !== false) {
+                  $query->andFilterWhere(['=', 'tb_qtrans.' . $column['data'], $value]);
+                }
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $statusschemas) !== false) {
+                  $query->andFilterWhere(['=', 'tb_service_status.' . $column['data'], $value]);
+                }
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $counterschemas) !== false) {
+                  $query->andFilterWhere(['=', 'tb_counterservice.' . $column['data'], $value]);
+                }
+              } else {
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $queueschemas) !== false) {
+                  $query->orFilterWhere(['like', 'tb_quequ.' . $column['data'], $value]);
+                }
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $queuetransschemas) !== false) {
+                  $query->orFilterWhere(['like', 'tb_qtrans.' . $column['data'], $value]);
+                }
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $statusschemas) !== false) {
+                  $query->orFilterWhere(['like', 'tb_service_status.' . $column['data'], $value]);
+                }
+                if ($column['searchable'] == 'true' && array_key_exists($column['data'], $counterschemas) !== false) {
+                  $query->orFilterWhere(['like', 'tb_counterservice.' . $column['data'], $value]);
+                }
+                // if ($column['data'] == 'driver_status_desc') {
+                //   $query->orFilterWhere(['like', 'tb_itemstatus.itemstatus_des', $value]);
+                // } else if ($column['data'] == 'driver_owner_type_des') {
+                //   $query->orFilterWhere(['like', 'tb_driver_owner_type.driver_owner_type_des', $value]);
+                // } else if ($column['data'] == 'fullname') {
+                //   $query->orFilterWhere(['like', 'tb_driver.driver_name', $value]);
+                //   $query->orFilterWhere(['like', 'tb_driver.driver_surname', $value]);
+                // } else if ($column['data'] == 'retail_name') {
+                //   $query->orFilterWhere(['like', 'tb_ret.ret_name', $value]);
+                // } else if ($column['data'] == 'ret_id') {
+                //   $query->orFilterWhere(['like', 'tb_ret.ret_id', $value]);
+                // } else {
+                //   $query->orFilterWhere(['like', $column['data'], $value]);
+                // }
+              }
+            }
+          }
+          return $query;
+        },
+      ],
+    ];
+  }
+
+  private function getQueueList()
+  {
+    $query = (new \yii\db\Query())
+      ->select([
+        'tb_quequ.*',
+        'tb_service.*',
+        'tb_quequ.quickly as quickly1',
+        'tb_counterservice.counterservice_name',
+        'tb_service_status.service_status_name'
+      ])
+      ->from('tb_quequ')
+      ->innerJoin('tb_service', 'tb_quequ.serviceid = tb_service.serviceid')
+      ->innerJoin('tb_qtrans', 'tb_quequ.q_ids = tb_qtrans.q_ids')
+      ->innerJoin('tb_service_status', 'tb_quequ.q_status_id = tb_service_status.service_status_id')
+      ->leftJoin('tb_caller', 'tb_qtrans.ids = tb_caller.qtran_ids')
+      ->leftJoin('tb_counterservice', 'tb_caller.counter_service_id = tb_counterservice.counterserviceid')
+      ->andWhere('tb_quequ.queue_date = CURRENT_DATE');
+    // ->orderBy('tb_quequ.q_ids DESC');
+    return $query;
   }
 
   public function actionIndex()
@@ -252,7 +342,7 @@ class KioskController extends \yii\web\Controller
         ->innerJoin('tb_service_status', 'tb_quequ.q_status_id = tb_service_status.service_status_id')
         ->leftJoin('tb_caller', 'tb_qtrans.ids = tb_caller.qtran_ids')
         ->leftJoin('tb_counterservice', 'tb_caller.counter_service_id = tb_counterservice.counterserviceid')
-        ->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')
+        ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
         ->orderBy('tb_quequ.q_ids DESC');
 
       $dataProvider = new ActiveDataProvider([
@@ -453,7 +543,7 @@ class KioskController extends \yii\web\Controller
         q_status_id = 1
         AND serviceid = :serviceid
         AND q_ids < :q_ids
-        AND DATE( tb_quequ.q_timestp ) = CURRENT_DATE';
+        AND tb_quequ.queue_date = CURRENT_DATE';
     $params = [':serviceid' => $model['serviceid'], ':q_ids' => $id];
     $count = Yii::$app->db->createCommand($sql)
       ->bindValues($params)
@@ -1286,7 +1376,7 @@ class KioskController extends \yii\web\Controller
 							q_status_id = 1
 							AND serviceid = q.serviceid
 							AND q_ids < q.q_ids
-							AND DATE( tb_quequ.q_timestp ) = CURRENT_DATE
+							AND tb_quequ.queue_date = CURRENT_DATE
 						) AS queue_left',
       ])
       ->from('tb_quequ as q')

@@ -97,7 +97,7 @@ class SiteController extends Controller
         $subseries2 = [];
         $y = 5;
         $day = date('Y-m-d');
-        $allq = TbQuequ::find()->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')->count();
+        $allq = TbQuequ::find()->andWhere('tb_quequ.queue_date = CURRENT_DATE')->count();
         //$allq = TbQuequ::find()->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])->count();
         for ($x = 1; $x <= 17; $x++) {
             $d1 = new \DateTime($day . ' ' . $y . ':00:00');
@@ -141,7 +141,7 @@ class SiteController extends Controller
                 ->where([
                     'tb_quequ.serviceid' => $service['serviceid'],
                 ])
-                ->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')
+                ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                 //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
                 ->count();
             $wait = TbQtrans::find()
@@ -149,7 +149,7 @@ class SiteController extends Controller
                     'tb_quequ.serviceid' => $service['serviceid'],
                     'tb_qtrans.service_status_id' => [1],
                 ])
-                ->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')
+                ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                 //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
                 ->innerJoin('tb_quequ', 'tb_quequ.q_ids = tb_qtrans.q_ids')
                 ->count();
@@ -158,7 +158,7 @@ class SiteController extends Controller
                     'tb_quequ.serviceid' => $service['serviceid'],
                     'tb_qtrans.service_status_id' => [4],
                 ])
-                ->andWhere('DATE(tb_quequ.q_timestp) = CURRENT_DATE')
+                ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
                 //->andWhere(['between', 'created_at',$day.' 00:00:00', $day.' 23:59:59'])
                 ->andWhere(['not', ['counter_service_id' => null]])
                 ->innerJoin('tb_quequ', 'tb_quequ.q_ids = tb_qtrans.q_ids')

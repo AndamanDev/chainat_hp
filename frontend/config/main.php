@@ -260,6 +260,7 @@ return [
             'app/kiosk/queue-list',
             'app/kiosk/print-ticket',
             'app/drug-dispensing/drug-dispensing-list',
+            'gii/*'
         ]
     ],
     'params' => $params,

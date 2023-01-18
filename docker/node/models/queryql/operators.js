@@ -1,0 +1,17 @@
+module.exports = [
+  '=',
+  '!=',
+  '<>',
+  '>',
+  '>=',
+  '<',
+  '<=',
+  'is',
+  'is not',
+  'in',
+  'not in',
+  'like',
+  'not like',
+  'between',
+  'not between',
+]

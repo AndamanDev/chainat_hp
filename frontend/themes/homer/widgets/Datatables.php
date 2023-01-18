@@ -59,7 +59,7 @@ class Datatables extends Widget
         $id = $this->options['id'];
         if ($this->clientOptions !== false) {
             $dtId = str_replace('-','',preg_replace('/(\w+) (\d+), (\d+)/i', '', $id));
-            $options = empty($this->clientOptions) ? '' : Json::htmlEncode($this->clientOptions);
+            $options = empty($this->clientOptions) ? '' : Json::encode($this->clientOptions);
             $js = "var dt_".$dtId." = jQuery('#$id').$name($options);";
             $view->registerJs($js);
         }
