@@ -105,7 +105,7 @@ const limiter = new RateLimit({
 })
 app.use(limiter)
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true, limit: process.env.BODY_REQUEST_LIMIT || '100mb' }));
 app.use(bodyParser.json());
 app.use(
   session({
