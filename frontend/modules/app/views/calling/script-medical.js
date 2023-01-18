@@ -56,7 +56,7 @@ var app = new Vue({
   watch: {
     form: {
       handler: function (val, oldVal) {
-        console.log(val)
+        
       },
       deep: true,
     },
@@ -2264,7 +2264,6 @@ $('button.on-call-selected').on('click', function (e) {
                 Queue.reloadTbWaiting() //โหลดข้อมูลรอเรียก
                 Queue.reloadTbCalling() //โหลดข้อมูลกำลังเรียก
                 $.each(res.call_result, function (index, data) {
-                  console.log(data)
                   setTimeout(function () {
                     Queue.toastrSuccess('CALL ' + data.data.q_num)
                     socket.emit('call', data) //sending data
@@ -2274,7 +2273,6 @@ $('button.on-call-selected').on('click', function (e) {
                 if (value == 0) {
                   var timer2 = 1000
                   $.each(res.end_result, function (index, data) {
-                    console.log(data)
                     setTimeout(function () {
                       Queue.toastrSuccess('END ' + data.data.q_num)
                       socket.emit('finish', data) //sending data
