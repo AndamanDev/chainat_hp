@@ -150,7 +150,7 @@ var app = new Vue({
           var api = this.api()
           dtFnc.initConfirm(api)
           var count = api.data().count()
-          $('.count-waiting').html(count)
+          // $('.count-waiting').html(count)
 
           // if (keySelected.length > 0 && keySelected != undefined && localStorage.getItem("medical-tablet-mode") == "true") {
           //   var indexRemove = [];
@@ -293,6 +293,7 @@ var app = new Vue({
           _this.waitingLoading = true
         })
         .on('xhr.dt', function (e, settings, json, xhr) {
+          $('.count-waiting').html(_.get(json, 'total', 0))
           _this.waitingLoading = false
         })
         .on('draw.dt', function () {
