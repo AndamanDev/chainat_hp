@@ -166,7 +166,7 @@ exports.postCreateQueue = async (req, res) => {
     if (picture) {
       const data = await this.savePicture(picture, hn)
       attributes = Object.assign(attributes, {
-        pt_pic: data.path
+        pt_pic: process.env.WEB_BASE_URL + data.path
       })
     }
 
