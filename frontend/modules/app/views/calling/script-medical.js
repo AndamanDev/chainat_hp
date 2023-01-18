@@ -56,7 +56,7 @@ var app = new Vue({
   watch: {
     form: {
       handler: function (val, oldVal) {
-        
+
       },
       deep: true,
     },
@@ -296,6 +296,11 @@ var app = new Vue({
           _this.waitingLoading = false
         })
         .on('draw.dt', function () {
+          var info = tbwaiting.page.info();
+          tbwaiting.column(0, { search: 'applied', order: 'applied', page: 'applied' }).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1 + info.start;
+          });
+
           var last = null
           var rows = tbwaiting
             .rows({
@@ -2303,3 +2308,123 @@ Queue.init()
 dt_tbqdata.on('xhr.dt', function (e, settings, json, xhr) {
   $("#count-qdata").html(_.get(json, 'total', 0));
 })
+
+// const items = []
+// let hn = "408849"
+// for (let i = 0; i < 100; i++) {
+//   items.push({
+//     "patient_info": {
+//       "pt_name": "นายวาทิต เสร็จกิจ",
+//       "hn": hn,
+//       "cid": "1103700796517",
+//       "dob": "1992-06-06",
+//       "age": "28 ปี",
+//       "data_visit": [
+//         {
+//           "vn": "640425060000",
+//           "main_dep": "010",
+//           "department": "อายุรกรรม"
+//         },
+//         {
+//           "vn": "640425060000",
+//           "main_dep": "130",
+//           "department": "อุบัติเหตุ"
+//         },
+//         {
+//           "vn": "640425060000",
+//           "main_dep": "163",
+//           "department": "ห้องยา"
+//         },
+//         {
+//           "vn": "640425060000",
+//           "main_dep": "162",
+//           "department": "ห้องการเงิน"
+//         }
+//       ],
+//       "vn": [
+//         "640425060000"
+//       ],
+//       "main_dep": [
+//         "010"
+//       ],
+//       "department": [
+//         "010 : อายุรกรรม"
+//       ]
+//     },
+//     "right": {
+//       "birthdate": "25350606",
+//       "count_select": 0,
+//       "fname": "วาทิต",
+//       "lname": "เสร็จกิจ",
+//       "maininscl": "OFC",
+//       "maininscl_main": "C",
+//       "maininscl_name": "สิทธิข้าราชการ/สิทธิหน่วยงานรัฐ",
+//       "nation": "099",
+//       "person_id": "1103700796517",
+//       "primary_amphur_name": "ปากเกร็ด",
+//       "primary_moo": "05",
+//       "primary_mooban_name": "ศาลาขี้ปลด",
+//       "primary_province_name": "นนทบุรี",
+//       "primary_tumbon_name": "ปากเกร็ด",
+//       "primaryprovince": "1200",
+//       "sex": "1",
+//       "subinscl": "O1",
+//       "subinscl_name": "สิทธิเบิกกรมบัญชีกลาง (ข้าราชการ)",
+//       "title": "003",
+//       "title_name": "นาย",
+//       "ws_data_source": "NHSO",
+//       "ws_date_request": "2021-09-06T00:00:00+07:00",
+//       "ws_status": "NHSO-000001",
+//       "ws_status_desc": "ok",
+//       "wsid": "WS000010594052926",
+//       "wsid_batch": "WSB00002412057608"
+//     },
+//     "appoint": {
+//       "appoint_id": "1619774",
+//       "pt_name": "นายวาทิต เสร็จกิจ",
+//       "hn": "0408812",
+//       "appoint_date": "2016-07-11",
+//       "appoint_time_begin": "",
+//       "appoint_time_end": "",
+//       "depcode": "010",
+//       "department": "อายุรกรรม",
+//       "appoint_preparing": "กรุณานำใบนัดมาด้วย\r\n",
+//       "appoint_reason": "รักษาต่อเนื่อง",
+//       "doctor_id": "029",
+//       "doctor_name": "พญ.ปรียานุช ตรงฤทธิชัยการ",
+//       "appoint_status": "T",
+//       "appoint_right_code": "10",
+//       "appoint_right": "ชำระเงินเอง"
+//     },
+//     "servicegroupid": 11,
+//     "serviceid": 11,
+//     "created_from": 1,
+//     "quickly": 0,
+//     "picture": ""
+//   })
+//   hn = parseInt(hn) + 1
+// }
+
+// console.log(items);
+
+
+
+// const testRequest = async (body) => {
+//   try {
+//     for (let i = 0; i < items.length; i++) {
+//       const body = items[i];
+//       const { data } = await axios.post(`http://q.chainathospital.org/node/api/kiosk/create-queue`, body)
+//       console.log(data);
+//       await new Promise((resolve, reject) => {
+//         setTimeout(() => {
+//           resolve("foo");
+//         }, 50);
+//       });
+//     }
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+// testRequest()
