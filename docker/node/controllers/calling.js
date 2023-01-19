@@ -1521,6 +1521,9 @@ exports.concatAudioFile = async (params) => {
         return {
           success: false
         }
+      } else {
+        fs.chmodSync(pathOutput1, 0777)
+        fs.chmodSync(pathOutput2, 0777)
       }
       // const files = await Promise.all([
       //   audioconcat(songs1)
