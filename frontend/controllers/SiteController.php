@@ -90,7 +90,7 @@ class SiteController extends Controller
     public function actionDashboard()
     {
         $data = [];
-        $services = TbService::find()->all();
+        $services = TbService::find()->asArray()->all();
         $seriesall = [];
         $serieswait = [];
         $series2 = [];
@@ -184,7 +184,7 @@ class SiteController extends Controller
         $seriesall = [['name' => 'คิวทั้งหมด', 'data' => $seriesall, 'color' => '#3498db']];
         $serieswait = [['name' => 'คิวรอ', 'data' => $serieswait, 'color' => '#e74c3c']];
         //return Json::encode(ArrayHelper::merge($seriesall, $serieswait));
-        return $this->render('dashboard', [
+        return $this->asJson([
             'data' => ArrayHelper::merge($all, $data),
             'categories' => ArrayHelper::getColumn($services, 'service_name'),
             'series' => ArrayHelper::merge($seriesall, $serieswait),
