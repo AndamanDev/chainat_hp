@@ -241,7 +241,7 @@ return [
             'app/calling/play-sound',
             'app/calling/autoload-media',
             'app/calling/update-status',
-            'site/index',
+            // 'site/index',
             'app/kiosk/led-options',
             'app/settings/save-nhso-token',
             'app/kiosk/pt-right',
