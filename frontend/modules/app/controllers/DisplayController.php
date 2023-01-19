@@ -375,6 +375,7 @@ class DisplayController extends \yii\web\Controller
                     'tb_service.serviceid' => $config['service_id']
                 ])
                 ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
+                ->andWhere('DATE(tb_caller.created_at) = CURRENT_DATE')
                 ->orderBy('tb_caller.call_timestp DESC');
 
             $dataProvider = new ActiveDataProvider([
@@ -636,14 +637,14 @@ class DisplayController extends \yii\web\Controller
         if ($request->isAjax) {
             \Yii::$app->response->format = Response::FORMAT_JSON;
             $config = $request->post('config', []);
-            $query = $this->findDisplayData($config);
+            // $query = $this->findDisplayData($config);
             $model = TbDisplayConfig::findOne($config['display_ids']);
             $services = !empty($model['service_id']) ? explode(",", $model['service_id']) : [];
             $counters = !empty($model['counterservice_id']) ? explode(",", $model['counterservice_id']) : [];
             $servicePrefixs = ArrayHelper::map(TbService::find()->where(['serviceid' => $services])->orderBy(['service_prefix' => SORT_ASC])->groupBy('service_prefix')->all(), 'serviceid', 'service_prefix');
 
-            $map = ArrayHelper::map($query, 'serviceid', 'service_prefix');
-            $caller_ids = ArrayHelper::getColumn($query, 'caller_ids');
+            // $map = ArrayHelper::map($query, 'serviceid', 'service_prefix');
+            // $caller_ids = ArrayHelper::getColumn($query, 'caller_ids');
             $mapArr = [];
             $qnumArr = [];
             foreach ($servicePrefixs as $prefix) {
@@ -660,6 +661,7 @@ class DisplayController extends \yii\web\Controller
                     //->where(['tb_caller.caller_ids' => $caller_ids,'tb_caller.call_status' => 'calling'])
                     ->andWhere('tb_quequ.q_num LIKE :q_num')
                     ->andWhere('tb_quequ.queue_date = CURRENT_DATE')
+                    ->andWhere('DATE(tb_caller.created_at) = CURRENT_DATE')
                     ->addParams([':q_num' => $prefix . '%'])
                     ->orderBy(['tb_caller.call_timestp' => SORT_DESC])
                     ->groupBy('tb_quequ.q_ids')

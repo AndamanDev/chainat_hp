@@ -197,6 +197,9 @@ Queue = {
         cancelButtonText: 'ยกเลิก',
         allowOutsideClick: false,
         showLoaderOnConfirm: true,
+        onOpen: () => {
+          swal.clickConfirm()
+        },
         preConfirm: function () {
           return new Promise(function (resolve, reject) {
             $.ajax({
@@ -334,7 +337,7 @@ Queue = {
           return new Promise(function (resolve, reject) {
             $.ajax({
               method: 'POST',
-              url: baseUrl + '/app/calling/transfer-examination-room',
+              url: '/app/calling/transfer-examination-room',
               dataType: 'json',
               data: {
                 data: data, //Data in column Datatable

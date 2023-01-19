@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const express = require("express")
 const app = require("express")();
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
@@ -47,6 +48,8 @@ admin.initializeApp({
   databaseURL: "https://chainathos-ef609-default-rtdb.asia-southeast1.firebasedatabase.app",
 });
 //const socketclient = ioclient("http://nginx", { path: "/node/socket.io" });
+
+app.use("/source", express.static("public"))
 
 socketclient
   .on("connect", () => {

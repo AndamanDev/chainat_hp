@@ -2,7 +2,13 @@ const { QueueWaitingQuerier, QueueCallingQuerier, QueueHoldQuerier } = require('
 const messageQueue = require('../queue/send-message')
 const { TbQueue, TbServiceProfile, TbCounterService, TbService, TbCaller, TbQueueTrans, TbCallingConfig, TbSound } = require('../models')
 const _ = require('lodash')
+const fs = require('fs')
+const path = require('path')
 const moment = require('moment')
+const audioconcat = require('audioconcat')
+const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path
+const ffmpeg = require("fluent-ffmpeg")
+ffmpeg.setFfmpegPath(ffmpegPath)
 moment.locale(process.env.MOMENT_LOCALE)
 
 exports.getQueueWaitingList = async (req, res) => {
@@ -195,12 +201,13 @@ exports.postCall = async (req, res) => {
       });
     }
 
-    const sound = await getMediaSound(modelQueue.q_num, modelCounterService)
+    const { sound, soungs } = await getMediaSound(modelQueue.q_num, modelCounterService)
 
     res.send({
       status: 200,
       message: 'success',
       sound: sound,
+      audio: soungs.success ? soungs.audio : null,
       data: data,
       modelCaller: modelCaller,
       modelQueue: modelQueue,
@@ -284,12 +291,13 @@ exports.postRecall = async (req, res) => {
       });
     }
 
-    const sound = await getMediaSound(modelQueue.q_num, modelCounterService)
+    const { sound, soungs } = await getMediaSound(modelQueue.q_num, modelCounterService)
 
     res.send({
       status: 200,
       message: 'success',
       sound: sound,
+      audio: soungs.success ? soungs.audio : null,
       data: data,
       modelCaller: modelCaller,
       modelQueue: modelQueue,
@@ -372,12 +380,13 @@ exports.postHold = async (req, res) => {
       });
     }
 
-    const sound = await getMediaSound(modelQueue.q_num, modelCounterService)
+    const { sound, soungs } = await getMediaSound(modelQueue.q_num, modelCounterService)
 
     res.send({
       status: 200,
       message: 'success',
       sound: sound,
+      audio: soungs.success ? soungs.audio : null,
       data: data,
       modelCaller: modelCaller,
       modelQueue: modelQueue,
@@ -705,6 +714,12 @@ const getMediaSound = async (queueno, counter) => {
     const qnum = String(queueno).split('')
     const modelSound = await TbSound.findOne({ sound_id: _.get(counter, 'sound_id') })
     const SoundService = await TbSound.findOne({ sound_id: _.get(counter, 'sound_service_id') })
+    const soungs = await this.concatAudioFile({
+      prompt: SoundService.sound_path_name,
+      text: queueno,
+      service: SoundService.sound_name,
+      counter: counter.counterservice_callnumber
+    })
 
     let basePath = `/media/${modelSound.sound_path_name}`
     let begin = [`${basePath}/please.wav`]
@@ -720,7 +735,7 @@ const getMediaSound = async (queueno, counter) => {
       sound.push(`${basePath}/${modelSound.sound_path_name}_${str}.wav`)
     }
     sound.push(...end)
-    return sound
+    return { sound, soungs }
   } catch (error) {
     return Promise.reject(error)
   }
@@ -838,12 +853,13 @@ exports.postCallingQueue = async (req, res) => {
       });
     }
 
-    const sound = await getMediaSound(modelQueue.q_num, modelCounterService)
+    const { sound, soungs } = await getMediaSound(modelQueue.q_num, modelCounterService)
 
     const response = {
       status: 200,
       message: 'success',
       sound: sound,
+      audio: soungs.success ? soungs.audio : null,
       data: {
         counter_service_id: req.body.counter_service_id,
         qnumber: modelQueue.q_num,
@@ -1379,5 +1395,188 @@ exports.postWaitingPharmacyQueue = async (req, res) => {
     res.send(response)
   } catch (error) {
     res.error(error)
+  }
+}
+
+
+// files path
+let p1 = path.join(path.dirname(__dirname), "public", "media", "Prompt1", "mp3").replace(/\\/g, "/")
+let p2 = path.join(path.dirname(__dirname), "public", "media", "Prompt2", "mp3").replace(/\\/g, "/")
+exports.concatAudioFile = async (params) => {
+  try {
+    const rootPath = path.dirname(__dirname)
+    let { prompt, text, service, counter, playCounter } = params
+    let songs1 = []
+    let songs2 = []
+    let baseUrl = process.env.BASE_URL_AUDIO
+
+    const chars = String(text).replace(/\s/g, "").split("")
+
+    if (prompt === "Prompt1") {
+      service = String(service).replace("Prompt1_", "").replace("_", "").replace(".wav", "").replace(".mp3", "")
+      songs1.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
+      songs1 = songs1.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
+      songs1.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+      songs1.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+      songs1.push(`${p1}/Prompt1_Sir.mp3`)
+
+      songs2.push(`${p1}/Prompt1_Please.mp3`) // เชิญหมายเลข
+      songs2 = songs2.concat(chars.map((c) => `${p1}/Prompt1_${c}.mp3`))
+      songs2.push(`${p1}/Prompt1_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+      // songs2.push(`${p1}/Prompt1_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+      songs2.push(`${p1}/Prompt1_Sir.mp3`)
+    }
+    if (prompt === "Prompt2") {
+      service = String(service).replace("Prompt2_", "").replace("_", "").replace(".wav", "").replace(".mp3", "")
+      songs1.push(`${p2}/Prompt2_Please.mp3`) // เชิญหมายเลข
+      songs1 = songs1.concat(chars.map((c) => `${p2}/Prompt2_${c}.mp3`))
+      songs1.push(`${p2}/Prompt2_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+      songs1.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+      songs1.push(`${p2}/Prompt2_Sir.mp3`)
+
+      songs2.push(`${p2}/Prompt2_Please.mp3`) // เชิญหมายเลข
+      songs2 = songs2.concat(chars.map((c) => `${p2}/Prompt2_${c}.mp3`))
+      songs2.push(`${p2}/Prompt2_${service}.mp3`) // ที่ช่อง ห้อง โต๊ะ เตียง
+      // songs2.push(`${p2}/Prompt2_${counter}.mp3`) // หมายเลขโต๊ะ เตียง ช่องบริการ
+      songs2.push(`${p2}/Prompt2_Sir.mp3`)
+    }
+    let isConcatSoung1 = true
+    for (let i = 0; i < songs1.length; i++) {
+      const song = songs1[i]
+      if (!fs.existsSync(song)) {
+        isConcatSoung1 = false
+        // throw new Error("File not found.")
+      }
+    }
+    let isConcatSoung2 = true
+    for (let i = 0; i < songs2.length; i++) {
+      const song = songs2[i]
+      if (!fs.existsSync(song)) {
+        isConcatSoung2 = false
+        // throw new Error("File not found.")
+      }
+    }
+
+    let output1 = `please-p1-${text}-${String(service).toLowerCase()}-${counter}-sir.mp3`
+    let output2 = `please-p1-${text}-${String(service).toLowerCase()}-sir.mp3`
+    if(prompt === "Prompt2") {
+      output1 = `please-p2-${text}-${String(service).toLowerCase()}-${counter}-sir.mp3`
+      output2 = `please-p2-${text}-${String(service).toLowerCase()}-sir.mp3`
+    }
+    // if (playCounter === "1") {
+    // 	output = `please-${text}-${String(service).toLowerCase()}-sir.mp3`
+    // }
+    // const files = await glob.globAsync("./public/media/**/*.mp3")
+    // const result = await audioQueue.add({ songs: songs, output: output })
+    const pathOutput1 = path.join(
+      rootPath,
+      "public",
+      "media",
+      "files",
+      output1
+    )
+    const pathOutput2 = path.join(
+      rootPath,
+      "public",
+      "media",
+      "files",
+      output2
+    )
+    if (!fs.existsSync(pathOutput1) || !fs.existsSync(pathOutput2)) {
+      if (isConcatSoung1) {
+        await new Promise((resolve, reject) => {
+          audioconcat(songs1)
+            .concat(pathOutput1)
+            .on("error", function (err, stdout, stderr) {
+              console.error("Error:", err)
+              console.error("ffmpeg stderr:", stderr)
+              // next(err)
+              reject(err)
+            })
+            .on("end", function (data) {
+              console.error("Audio created in:", data)
+              resolve(pathOutput1)
+            })
+        });
+      }
+
+      if (isConcatSoung2) {
+        await new Promise((resolve, reject) => {
+          audioconcat(songs2)
+            .concat(pathOutput2)
+            .on("error", function (err, stdout, stderr) {
+              console.error("Error:", err)
+              console.error("ffmpeg stderr:", stderr)
+              // next(err)
+              reject(err)
+            })
+            .on("end", function (data) {
+              console.error("Audio created in:", data)
+              resolve(pathOutput2)
+            })
+        })
+      }
+
+      if (!fs.existsSync(pathOutput1) || !fs.existsSync(pathOutput2)) {
+        return {
+          success: false
+        }
+      }
+      // const files = await Promise.all([
+      //   audioconcat(songs1)
+      //     .concat(pathOutput1)
+      //     .on("error", function (err, stdout, stderr) {
+      //       console.error("Error:", err)
+      //       console.error("ffmpeg stderr:", stderr)
+      //       // next(err)
+      //       Promise.reject(err)
+      //     })
+      //     .on("end", function (data) {
+      //       console.error("Audio created in:", data)
+      //       Promise.resolve(pathOutput1)
+      //     }),
+      //   audioconcat(songs2)
+      //     .concat(pathOutput2)
+      //     .on("error", function (err, stdout, stderr) {
+      //       console.error("Error:", err)
+      //       console.error("ffmpeg stderr:", stderr)
+      //       // next(err)
+      //       Promise.reject(err)
+      //     })
+      //     .on("end", function (data) {
+      //       console.error("Audio created in:", data)
+      //       Promise.resolve(pathOutput2)
+      //     }),
+      // ])
+      return {
+        success: true,
+        audio: {
+          file1: `${baseUrl}/files/${output1}`,
+          file2: `${baseUrl}/files/${output2}`,
+        },
+        // path: `/files/${output}`,
+        // url: `${baseUrl}/files/${output}`,
+        songs: {
+          songs1: songs1,
+          songs2: songs2,
+        },
+      }
+    } else {
+      return {
+        success: true,
+        audio: {
+          file1: `${baseUrl}/files/${output1}`,
+          file2: `${baseUrl}/files/${output2}`,
+        },
+        // path: `/files/${output}`,
+        // url: `${baseUrl}/files/${output}`,
+        songs: {
+          songs1: songs1,
+          songs2: songs2,
+        },
+      }
+    }
+  } catch (error) {
+    return Promise.reject(error)
   }
 }

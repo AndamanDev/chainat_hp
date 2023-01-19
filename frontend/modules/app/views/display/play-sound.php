@@ -271,6 +271,7 @@ $this->registerJs(
 var jPlayerid = "#jquery_jplayer_N";
 var jp_container = "#jp_container";
 var i = 0;
+var Timeoutended;
 var myPlayer = $(jPlayerid),
     myPlayerData,
     fixFlash_mp4, // Flag: The m4a and m4v Flash player gives some old currentTime values when changed.
@@ -312,33 +313,64 @@ var myPlaylist = new jPlayerPlaylist({
         }
     },
     playing: function (event) {
+        app.isPlaying = true
         var current = myPlaylist.current;
-        var data = myPlaylist.playlist[current];
-        if(data.wav.indexOf("please.wav") >= 0){
-            var query = yii.getQueryParams(window.location.search)
-            app.caller_ids = parseInt(data.artist.modelCaller.caller_ids)
+        // var data = myPlaylist.playlist[current];
+        const data = event.jPlayer.status.media;
+        if(data){ // data.wav.indexOf("please.wav") >= 0
             //dt_tabledisplay.ajax.url( '/app/display/data-display?id='+ query.id + '&q_ids='+data.artist.modelQueue.q_ids).load();
             // Display.reloadDisplay(data.artist.modelQueue.q_ids);
             // Display.reloadDisplay2();
             // Display.reloadHold();
-            setTimeout(function(){
-                Display.blink(data);
-            }, 500);
-            socket.emit('display', data);//sending data
+            if(data.wav.indexOf("please.wav") !== -1 || data.wav.indexOf(".mp3") !== -1) {
+              // var query = yii.getQueryParams(window.location.search)
+              app.caller_ids = parseInt(data.artist.modelCaller.caller_ids)
+              setTimeout(function(){
+                  Display.blink(data);
+              }, 500);
+              socket.emit('display', data);//sending data
+              tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
+              // Queue.updateStatus(data.artist.modelCaller.caller_ids);//update tb_caller status = callend
+            }
             //toastr.success(' ' + data.title, 'Calling!', {timeOut: 5000,positionClass: "toast-top-right"});
         }
-        if(data.wav.indexOf("Prompt1_Sir.wav") >= 0 || data.wav.indexOf("Prompt2_Sir.wav") >= 0){
-            Queue.updateStatus(data.artist.modelCaller.caller_ids);//update tb_caller status = callend
-        }
-        if((current + 1) === myPlaylist.playlist.length){
-            myPlaylist.remove();//reset q
-        }
+        // if(data.wav.indexOf("Prompt1_Sir.wav") >= 0 || data.wav.indexOf("Prompt2_Sir.wav") >= 0){
+        //     Queue.updateStatus(data.artist.modelCaller.caller_ids);//update tb_caller status = callend
+        // }
+        // if((current + 1) === myPlaylist.playlist.length){
+        //     myPlaylist.remove();//reset q
+        // }
     },
     loadstart: function (event) {
         //console.log(myPlaylist.playlist);
+      if(Timeoutended){
+        clearTimeout(Timeoutended)
+      }
     },
     ended: function (event) {
+      const data = event.jPlayer.status.media;
+      if (data) {
+        const caller = _.get(data, "artist.modelCaller");
+        const index = _.findIndex(app.qlist, (item) => parseInt(item.caller_id) === parseInt(caller.caller_id));
 
+        Timeoutended = setTimeout(() => {
+          if (myPlaylist.playlist.length - 1 === myPlaylist.current) {
+            myPlaylist.remove();
+          } 
+          
+          if (myPlaylist.playlist.length && !app.isPlaying) {
+            if ($(jPlayerid).data().jPlayer.status.paused === true) {
+              myPlaylist.next();
+            }
+          }
+        }, 300);
+
+        if(data.wav.indexOf("Prompt1_Sir.wav") !== -1 || data.wav.indexOf("Prompt2_Sir.wav") !== -1 || data.wav.indexOf(".mp3") !== -1){
+          Queue.updateStatus(data.artist.modelCaller.caller_ids);//update tb_caller status = callend
+        }
+
+        app.isPlaying = false
+      }
     },
     error: function (event) {
         console.log(event);
@@ -486,14 +518,23 @@ Queue = {
         });
     },
     addMedia: function(res){
+      if(res.audio) {
+        myPlaylist.add({
+            title: res.modelQueue.q_num,
+            artist: res,
+            wav: res.audio.file1 + "?v=" + Date.now()
+        });
+      } else {
         $.each(res.sound, function( index, sound ) {
             myPlaylist.add({
                 title: res.modelQueue.q_num,
                 artist: res,
-                wav: sound
+                wav: sound + "?v=" + Date.now()
             });
         });
-        $(jPlayerid).jPlayer("play");
+      }
+        
+      $(jPlayerid).jPlayer("play");
     },
     init: function(){
         var self = this;

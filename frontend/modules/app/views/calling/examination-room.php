@@ -532,5 +532,5 @@ echo $this->render('_datatables',['modelForm' => $modelForm,'modelProfile' => $m
 
 // JS
 // );
-$this->registerJs($this->render('examination-room.js'));
+$this->registerJs($this->render(YII_ENV_DEV ? 'examination-room.js' : 'examination-room.min.js'));
 ?>

@@ -523,7 +523,7 @@ var app = new Vue({
         ],
         columnDefs: [
           {
-            targets: [2, 3, 5, 7],
+            targets: [2, 3, 5, 6, 7],
             visible: false,
           },
         ],
@@ -758,7 +758,7 @@ var app = new Vue({
             },
           },
         ],
-        columnDefs: [{ targets: [2, 3, 5, 7], visible: false }],
+        columnDefs: [{ targets: [2, 3, 5, 6, 7], visible: false }],
         buttons: [
           { extend: 'colvis', text: '<i class="glyphicon glyphicon-list"></i> ' },
           {
@@ -910,6 +910,9 @@ Queue = {
           cancelButtonText: 'ยกเลิก',
           allowOutsideClick: false,
           showLoaderOnConfirm: true,
+          onOpen: () => {
+            swal.clickConfirm()
+          },
           preConfirm: function (value) {
             return new Promise(function (resolve, reject) {
               $.ajax({
@@ -1068,6 +1071,9 @@ Queue = {
           cancelButtonText: 'ยกเลิก',
           allowOutsideClick: false,
           showLoaderOnConfirm: true,
+          onOpen: () => {
+            swal.clickConfirm()
+          },
           preConfirm: function () {
             return new Promise(function (resolve, reject) {
               $.ajax({

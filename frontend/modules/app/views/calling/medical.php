@@ -451,7 +451,11 @@ $this->registerJsFile(
   '@web/vendor/moment/min/moment-with-locales.min.js',
   ['depends' => [\yii\web\JqueryAsset::class]]
 );
-$this->registerJs($this->render('script-medical.js'));
+$this->registerJsFile(
+  'https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js',
+  ['depends' => [\yii\web\JqueryAsset::class]]
+);
+$this->registerJs($this->render(YII_ENV_DEV ? 'script-medical.js' : 'script-medical.min.js'));
 $this->registerJs(
   <<<JS
 //search data

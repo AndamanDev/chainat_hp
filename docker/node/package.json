@@ -20,7 +20,9 @@
 	"license": "ISC",
 	"homepage": "https://bitbucket.org/M_ComScience/q-banbung#readme",
 	"dependencies": {
+		"@ffmpeg-installer/ffmpeg": "^1.1.0",
 		"@truepic/queryql": "^0.11.1",
+		"audioconcat": "^0.1.4",
 		"axios": "^0.21.1",
 		"body-parser": "^1.20.1",
 		"bootstrap": "^3.4.1",
@@ -35,6 +37,7 @@
 		"express-session": "^1.17.3",
 		"express-validation": "^4.1.0",
 		"firebase-admin": "^9.9.0",
+		"fluent-ffmpeg": "^2.1.2",
 		"glob": "^8.0.3",
 		"helmet": "^6.0.1",
 		"http-assert": "^1.5.0",

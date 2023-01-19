@@ -555,7 +555,8 @@ var app = new Vue({
   el: '#app',
   data: {
     qlist: [],
-    caller_ids: null
+    caller_ids: null,
+    isPlaying: false
   },
   mounted() {
       this.initTableLastQueue();
@@ -675,7 +676,7 @@ var app = new Vue({
                     var counters = (model.counterserviceid).split(',').map(v => parseInt(v));
                     if(jQuery.inArray(parseInt(res.counter.counterserviceid), counters) != -1) {
                         if(jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1) {
-                            tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
+                            // tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
                             thold.ajax.reload();//โหลดข้อมูลคิวพัก
                             setTimeout(function(){
                                 Queue.addMedia(res);
