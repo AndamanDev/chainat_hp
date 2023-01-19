@@ -53,6 +53,7 @@ return [
             'backend/web/assets',
             'frontend/runtime',
             'frontend/web/assets',
+            'frontend/web/media',
         ],
         'setExecutable' => [
             'yii',
