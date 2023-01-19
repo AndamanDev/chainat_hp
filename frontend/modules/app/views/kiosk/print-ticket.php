@@ -11,9 +11,12 @@ JqueryAsset::register($this);
 $this->registerCssFile("@web/css/80mm.css", [
     'depends' => [BootstrapAsset::className()],
 ]);
-$this->registerCssFile("https://fonts.googleapis.com/css?family=Prompt",[
-    'depends' => [BootstrapAsset::className()],
+$this->registerCssFile("@web/css/site.css", [
+  'depends' => [BootstrapAsset::className()],
 ]);
+// $this->registerCssFile("https://fonts.googleapis.com/css?family=Prompt",[
+//     'depends' => [BootstrapAsset::className()],
+// ]);
 
 $baseUrl = Url::base(true);
 

@@ -452,7 +452,7 @@ $this->registerJsFile(
   ['depends' => [\yii\web\JqueryAsset::class]]
 );
 $this->registerJsFile(
-  'https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js',
+  '@web/js/axios.min.js',
   ['depends' => [\yii\web\JqueryAsset::class]]
 );
 $this->registerJs($this->render(YII_ENV_DEV ? 'script-medical.js' : 'script-medical.min.js'));
