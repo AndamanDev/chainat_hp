@@ -108,13 +108,15 @@ var app = new Vue({
               return $.extend({}, d, {
                 page: page,
                 form: _this.form,
+                'access-token': accesstoken,
               })
             }
             return $.extend({}, d, {
               form: _this.form,
+              'access-token': accesstoken,
             })
           },
-          type: 'POST',
+          type: 'GET',
           complete: function (jqXHR, textStatus) { },
         },
         dom: "<'row'<'col-xs-6'f><'col-xs-6 d-flex justify-content-end'Bl>> <'row'<'col-xs-12'tr>> <'row'<'col-xs-5'i><'col-xs-7'p>>",
@@ -358,6 +360,7 @@ var app = new Vue({
               return $.extend({}, d, {
                 page: page,
                 form: _this.form,
+                'access-token': accesstoken,
                 // modelForm: modelForm,
                 // modelProfile: modelProfile,
               })
@@ -366,9 +369,10 @@ var app = new Vue({
               // modelForm: modelForm,
               // modelProfile: modelProfile,
               form: _this.form,
+              'access-token': accesstoken,
             })
           },
-          type: 'POST',
+          type: 'GET',
         },
         dom: "<'row'<'col-xs-6'f><'col-xs-6 d-flex justify-content-end'Bl>> <'row'<'col-xs-12'tr>> <'row'<'col-xs-5'i><'col-xs-7'p>>",
         language: {
@@ -613,6 +617,7 @@ var app = new Vue({
               return $.extend({}, d, {
                 page: page,
                 form: _this.form,
+                'access-token': accesstoken,
                 // modelForm: modelForm,
                 // modelProfile: modelProfile,
               })
@@ -621,9 +626,10 @@ var app = new Vue({
               // modelForm: modelForm,
               // modelProfile: modelProfile,
               form: _this.form,
+              'access-token': accesstoken,
             })
           },
-          type: 'POST',
+          type: 'GET',
         },
         dom: "<'row'<'col-xs-6'f><'col-xs-6 d-flex justify-content-end'Bl>> <'row'<'col-xs-12'tr>> <'row'<'col-xs-5'i><'col-xs-7'p>>",
         language: {

@@ -3,9 +3,9 @@ const router = express.Router();
 const controllers = require('../../controllers/calling')
 const authenticate = require('../../middlewares/authenticate')
 
-router.post(`/waiting-list`, controllers.getQueueWaitingList)
-router.post(`/calling-list`, controllers.getQueueCallingList)
-router.post(`/hold-list`, controllers.getQueueHoldList)
+router.get(`/waiting-list`, authenticate, controllers.getQueueWaitingList)
+router.get(`/calling-list`, authenticate, controllers.getQueueCallingList)
+router.get(`/hold-list`, authenticate, controllers.getQueueHoldList)
 router.post(`/call`, authenticate, controllers.postCall)
 router.post(`/recall`, authenticate, controllers.postRecall)
 router.post(`/hold`, authenticate, controllers.postHold)

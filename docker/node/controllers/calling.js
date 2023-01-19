@@ -14,7 +14,7 @@ moment.locale(process.env.MOMENT_LOCALE)
 exports.getQueueWaitingList = async (req, res) => {
   try {
     // const modelProfile = _.get(req.body, 'modelProfile')
-    const modelProfile = await TbServiceProfile.findOneById(_.get(req.body, 'form.service_profile_id', null))
+    const modelProfile = await TbServiceProfile.findOneById(_.get(req.query, 'form.service_profile_id', null))
     const serviceids = String(_.get(modelProfile, 'service_id')).split(",");
     let params = this.mapParams(req.body)
     params = _.assign(params, req.query)
@@ -35,11 +35,13 @@ exports.getQueueWaitingList = async (req, res) => {
 
 exports.getQueueCallingList = async (req, res) => {
   try {
-    const modelProfile = await TbServiceProfile.findOneById(_.get(req.body, 'form.service_profile_id', null))
+    const modelProfile = await TbServiceProfile.findOneById(_.get(req.query, 'form.service_profile_id', null))
     // const modelProfile = _.get(req.body, 'modelProfile')
     const serviceids = String(_.get(modelProfile, 'service_id')).split(",");
+    let params = this.mapParams(req.body)
+    params = _.assign(params, req.query)
 
-    const querier = new QueueCallingQuerier(this.mapParams(req.body), TbQueue.getDataCalling(serviceids))
+    const querier = new QueueCallingQuerier(params, TbQueue.getDataCalling(serviceids))
     const response = await querier.run()
     res.send({
       data: _.get(response, 'data', []),
@@ -55,11 +57,13 @@ exports.getQueueCallingList = async (req, res) => {
 
 exports.getQueueHoldList = async (req, res) => {
   try {
-    const modelProfile = await TbServiceProfile.findOneById(_.get(req.body, 'form.service_profile_id', null))
+    const modelProfile = await TbServiceProfile.findOneById(_.get(req.query, 'form.service_profile_id', null))
     // const modelProfile = _.get(req.body, 'modelProfile')
     const serviceids = String(_.get(modelProfile, 'service_id')).split(",");
+    let params = this.mapParams(req.body)
+    params = _.assign(params, req.query)
 
-    const querier = new QueueHoldQuerier(this.mapParams(req.body), TbQueue.getDataHold(serviceids))
+    const querier = new QueueHoldQuerier(params, TbQueue.getDataHold(serviceids))
     const response = await querier.run()
     res.send({
       data: _.get(response, 'data', []),
