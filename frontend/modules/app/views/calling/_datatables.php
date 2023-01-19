@@ -744,9 +744,9 @@ if ($action == 'index') {
                     size: info.length
                   }
                   if(info.length !== -1) {
-                    return $.extend( {}, d, { page: page } );
+                    return $.extend( {}, d, { page: page, \'access-token\': accesstoken } );
                   }
-                  return $.extend( {}, d );
+                  return $.extend( {}, d, { \'access-token\': accesstoken } );
                 }')
       ],
       "dom" => "<'row'<'col-xs-6'f><'col-xs-6 d-flex justify-content-end'Bl>> <'row'<'col-xs-12'tr>> <'row'<'col-xs-5'i><'col-xs-7'p>>",
