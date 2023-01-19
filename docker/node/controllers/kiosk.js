@@ -66,29 +66,33 @@ exports.postCreateQueue = async (req, res) => {
       maininscl_name = _.get(appoint, 'appoint_right')
     }
 
-    let slot = await TbServiceTsSlot.find()
-      .where({ serviceid: serviceid })
-      .whereRaw('? >= t_slot_begin', [moment().format('HH:mm:00')])
-      .whereRaw('? <= t_slot_end', [moment().format('HH:mm:00')])
-      .orderBy('t_slot_begin', 'asc')
-      .first()
+    const tslot = await TbServiceTsSlot.find().where({ serviceid: serviceid }).count('*', { as: 'count' }).first()
+    const counttslot = _.get(tslot, 'count', 0)
 
-    req.assert(slot, 400, `บริการ '${modelService.service_name}' ไม่ได้อยู่ในช่วงเวลาให้บริการ.`)
-    let tslotid = _.get(slot, 'tslotid')
-    // const tslot = await TbServiceTsSlot.find().where({ serviceid: serviceid }).count('*', { as: 'count' }).first()
-    // const counttslot = _.get(tslot, 'count', 0)
+    let tslotid = null
+    if (counttslot) {
+      let slot = await TbServiceTsSlot.find()
+        .where({ serviceid: serviceid })
+        .whereRaw('? >= t_slot_begin', [moment().format('HH:mm:00')])
+        .whereRaw('? <= t_slot_end', [moment().format('HH:mm:00')])
+        .orderBy('t_slot_begin', 'asc')
+        .first()
 
-    const countqueue = await TbQueue.db(TbQueue.tableName)
-      .where({
-        serviceid: serviceid,
-        tslotid: _.get(slot, 'tslotid')
-      })
-      .whereRaw('queue_date = ?', [moment().format('YYYY-MM-DD')])
-      .count('q_ids', { as: 'count' })
-      .first()
-    const total = _.get(countqueue, 'count', 0)
-    if (total > 0 && total >= _.get(slot, 'q_limitqty', 0) && slot.q_limit === 1) {
-      req.assert(false, 400, `บริการ '${modelService.service_name}' คิวเต็ม!`)
+      req.assert(slot, 400, `บริการ '${modelService.service_name}' ไม่ได้อยู่ในช่วงเวลาให้บริการ.`)
+      tslotid = _.get(slot, 'tslotid')
+
+      const countqueue = await TbQueue.db(TbQueue.tableName)
+        .where({
+          serviceid: serviceid,
+          tslotid: tslotid
+        })
+        .whereRaw('queue_date = ?', [moment().format('YYYY-MM-DD')])
+        .count('q_ids', { as: 'count' })
+        .first()
+      const total = _.get(countqueue, 'count', 0)
+      if (total > 0 && total >= _.get(slot, 'q_limitqty', 0) && slot.q_limit === 1) {
+        req.assert(false, 400, `บริการ '${modelService.service_name}' คิวเต็ม!`)
+      }
     }
 
     let modelQueue = await TbQueue.find()
