@@ -222,7 +222,7 @@ var app = new Vue({
     },
     getQueues: async function () {
       try {
-        const data = await axios.get(`/node/api/kiosk/queue-list`)
+        const data = await axios.get(`/node/api/kiosk/queue-list?access-token=${accesstoken}`)
         if (Array.isArray(data)) {
           this.queues = data
         }

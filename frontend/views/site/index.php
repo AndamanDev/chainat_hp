@@ -4,6 +4,8 @@ use homer\widgets\highcharts\HighchartsAsset;
 use homer\assets\SocketIOAsset;
 use homer\assets\ToastrAsset;
 use frontend\assets\Select2Asset;
+use yii\helpers\Json;
+use yii\web\View;
 
 ToastrAsset::register($this);
 SocketIOAsset::register($this);
@@ -28,6 +30,7 @@ CSS
 $this->registerCssFile("@web/css/select2-bootstrap.min.css", [
   'depends' => [\yii\bootstrap\BootstrapAsset::class],
 ]);
+$this->registerJs('var accesstoken = ' . Json::encode(Yii::$app->user->identity->getAuthKey()) . '; ', View::POS_HEAD);
 ?>
 
 <div id="app">
