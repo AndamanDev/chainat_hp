@@ -444,16 +444,16 @@ socket
         // Display.reloadDisplay2();
 		// Display.reloadHold();
 		setTimeout(function(){
-			if(undefined != dt_tabledisplay.row( '#' + res.artist.data.caller_ids ).data()){
-			}else{
-                /* var th = moment().locale('th');
-				dt_tabledisplay.row( ':eq(0)' ).remove();
-				dt_tabledisplay.row.add( {
-			        "q_num": '<text class="'+res.title+'">' + res.title + '</text>',
-                    "service_number": '<text class="'+res.title+'">' + res.artist.counter.counterservice_callnumber + '</text>',
-                    "call_timestp": th.format("YYYY-MM-DD H:mm:ss")
-			    } ).draw().node(); */
-			}
+			// if(undefined != dt_tabledisplay.row( '#' + res.artist.data.caller_ids ).data()){
+			// }else{
+      //           /* var th = moment().locale('th');
+			// 	dt_tabledisplay.row( ':eq(0)' ).remove();
+			// 	dt_tabledisplay.row.add( {
+			//         "q_num": '<text class="'+res.title+'">' + res.title + '</text>',
+      //               "service_number": '<text class="'+res.title+'">' + res.artist.counter.counterservice_callnumber + '</text>',
+      //               "call_timestp": th.format("YYYY-MM-DD H:mm:ss")
+			//     } ).draw().node(); */
+			// }
 			Display.blink(res);
 		}, 1000);
     }
