@@ -16,8 +16,9 @@ exports.getQueueWaitingList = async (req, res) => {
     // const modelProfile = _.get(req.body, 'modelProfile')
     const modelProfile = await TbServiceProfile.findOneById(_.get(req.query, 'form.service_profile_id', null))
     const serviceids = String(_.get(modelProfile, 'service_id')).split(",");
-    let params = this.mapParams(req.body)
-    params = _.assign(params, req.query)
+    let params = _.assign(req.body, req.query)
+    params = this.mapParams(params)
+    
 
     const querier = new QueueWaitingQuerier(params, TbQueue.getDataWaiting(serviceids))
     const response = await querier.run()
@@ -38,8 +39,8 @@ exports.getQueueCallingList = async (req, res) => {
     const modelProfile = await TbServiceProfile.findOneById(_.get(req.query, 'form.service_profile_id', null))
     // const modelProfile = _.get(req.body, 'modelProfile')
     const serviceids = String(_.get(modelProfile, 'service_id')).split(",");
-    let params = this.mapParams(req.body)
-    params = _.assign(params, req.query)
+    let params = _.assign(req.body, req.query)
+    params = this.mapParams(params)
 
     const querier = new QueueCallingQuerier(params, TbQueue.getDataCalling(serviceids))
     const response = await querier.run()
@@ -60,8 +61,8 @@ exports.getQueueHoldList = async (req, res) => {
     const modelProfile = await TbServiceProfile.findOneById(_.get(req.query, 'form.service_profile_id', null))
     // const modelProfile = _.get(req.body, 'modelProfile')
     const serviceids = String(_.get(modelProfile, 'service_id')).split(",");
-    let params = this.mapParams(req.body)
-    params = _.assign(params, req.query)
+    let params = _.assign(req.body, req.query)
+    params = this.mapParams(params)
 
     const querier = new QueueHoldQuerier(params, TbQueue.getDataHold(serviceids))
     const response = await querier.run()
