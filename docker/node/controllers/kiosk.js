@@ -138,6 +138,20 @@ exports.postCreateQueue = async (req, res) => {
       tslotid = _.get(modelQueue, 'tslotid')
     }
 
+    // save last queue
+    const lastqueuevalues = TbLastQueue.schemas().validateSync({
+      id: _.get(lastQueue, 'id', null),
+      queue_no: q_num,
+      queue_date: moment().format('YYYY-MM-DD'),
+      service_id: serviceid,
+      next_queue_no: this.generateQueueNumber({
+        lastnum: q_num,
+        prefix: service_prefix,
+        digit: service_numdigit
+      })
+    })
+    await new TbLastQueue(lastqueuevalues).save()
+
     let attributes = {
       q_ids: _.get(modelQueue, 'q_ids', null),
       q_num: q_num,
@@ -206,20 +220,6 @@ exports.postCreateQueue = async (req, res) => {
     const qtranvalues = TbQueueTrans.schemas().validateSync(queueTransAttributes)
     const qtranssaved = await new TbQueueTrans(qtranvalues).save()
     q_tran_ids = _.get(modelQtrans, 'ids', _.get(qtranssaved, '[0]', null))
-
-    // save last queue
-    const lastqueuevalues = TbLastQueue.schemas().validateSync({
-      id: _.get(lastQueue, 'id', null),
-      queue_no: q_num,
-      queue_date: moment().format('YYYY-MM-DD'),
-      service_id: serviceid,
-      next_queue_no: this.generateQueueNumber({
-        lastnum: q_num,
-        prefix: service_prefix,
-        digit: service_numdigit
-      })
-    })
-    await new TbLastQueue(lastqueuevalues).save()
 
     // send notification
     if (token) {
