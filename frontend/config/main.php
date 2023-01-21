@@ -147,6 +147,8 @@ return [
             ],
         ],
         'session' => [
+            'class' => 'yii\redis\Session',
+            'redis' => 'redis',
             'name' => 'FRONTENDSESSID',
             'cookieParams' => [
                 'httpOnly' => true,

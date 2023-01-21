@@ -82,6 +82,8 @@ return [
             ],
         ],
         'session' => [
+            'class' => 'yii\redis\Session',
+            'redis' => 'redis',
             'name' => 'BACKENDSESSID',
             'cookieParams' => [
                 'httpOnly' => true,
