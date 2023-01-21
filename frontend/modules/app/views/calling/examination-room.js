@@ -1404,6 +1404,9 @@ var app = new Vue({
     // waiting
     initTableWaiting: function () {
       const _this = this
+      if(_this.tbwaiting) {
+        _this.tbwaiting.destroy();
+      }
       var tbwaiting = jQuery('#tb-waiting').DataTable({
         ajax: {
           url: '/node/api/v1/examination/waiting-list',
@@ -1555,6 +1558,9 @@ var app = new Vue({
     // calling
     initTableCalling: function () {
       const _this = this
+      if(_this.tbcalling) {
+        _this.tbcalling.destroy();
+      }
       var tbcalling = jQuery('#tb-calling').DataTable({
         ajax: {
           url: `/node/api/v1/examination/calling-list`,
@@ -1725,6 +1731,9 @@ var app = new Vue({
     // hold
     initTableHold: function () {
       const _this = this
+      if(_this.tbhold) {
+        _this.tbhold.destroy();
+      }
       var tbhold = jQuery('#tb-hold').DataTable({
         ajax: {
           url: `/node/api/v1/examination/hold-list`,
