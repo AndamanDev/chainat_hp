@@ -30,15 +30,30 @@ use yii\helpers\Url;
     'id' => 'tb-sound',
     'select2' => true,
     'clientOptions' => [
+        // 'ajax' => [
+        //     'url' => Url::base(true).'/app/settings/data-sound'
+        // ],
         'ajax' => [
-            'url' => Url::base(true).'/app/settings/data-sound'
+          'url' => '/node/api/v1/setting/sounds',
+          'data' => new JsExpression('function ( d, settings ) {
+              var api = new $.fn.dataTable.Api(settings)
+              var info = api.page.info();
+              var page = {
+                number: info.page + 1,
+                size: info.length
+              }
+              if(info.length !== -1) {
+                return $.extend( {}, d, { page: page, \'access-token\': accesstoken } );
+              }
+              return $.extend( {}, d, { \'access-token\': accesstoken } );
+            }')
         ],
-        "dom" => "<'pull-left'f><'pull-right'l>t<'pull-left'i>p",
+        "dom" => "<'row'<'col-xs-6 d-flex justify-content-start'f><'col-xs-6 d-flex justify-content-end'Bl>> <'row'<'col-xs-12'tr>> <'row'<'col-xs-5'i><'col-xs-7'p>>",
         "language" => array_merge(Yii::$app->params['dtLanguage'],[
             "search" => "_INPUT_ " . Html::a(Icon::show('plus').' เพิ่ม-ลบ รายการ', ['/app/settings/create-sound'],['class' => 'btn btn-success','role' => 'modal-remote']),
             "searchPlaceholder" => "ค้นหา..."
         ]),
-        "pageLength" => 50,
+        "pageLength" => 10,
         "lengthMenu" => [ [10, 25, 50, 75, 100], [10, 25, 50, 75, 100] ],
         "autoWidth" => false,
         "deferRender" => true,
@@ -53,7 +68,7 @@ use yii\helpers\Url;
             function () {
                 var api = this.api();
                 dtFnc.initResponsive( api );
-                dtFnc.initColumnIndex( api );
+                // dtFnc.initColumnIndex( api );
             }
         '),
         'columns' => [
@@ -61,9 +76,40 @@ use yii\helpers\Url;
             ["data" => "sound_name","className" => "dt-body-left dt-head-nowrap","title" => "ชื่อไฟล์"],
             ["data" => "sound_path_name","className" => "dt-body-left dt-head-nowrap","title" => "โฟรเดอร์ไฟล์"],
             ["data" => "sound_th","className" => "dt-body-left dt-head-nowrap","title" => "เสียงเรียก"],
-            ["data" => "sound_type","className" => "dt-body-left dt-head-nowrap","title" => "ประเภทเสียง"],
-            ["data" => "actions","className" => "dt-center dt-nowrap","orderable" => false,"title" => "ดำเนินการ"]
+            [
+              "data" => "sound_type",
+              "className" => "dt-body-center dt-head-nowrap dt-center",
+              "title" => "ประเภทเสียง",
+              "render" => new JsExpression('function (data, type, row, meta) {
+                return row.sound_type === 1 ? \'เสียงผู้หญิง\' : \'เสียงผู้ชาย\'
+              }')
+            ],
+            [
+              "data" => null,
+              "defaultContent" => "",
+              "className" => "dt-center dt-nowrap",
+              "orderable" => false,
+              "title" => "ดำเนินการ",
+              "render" => new JsExpression('function (data, type, row, meta) {
+                return `<a href="/app/settings/update-sound?id=${row.sound_id}" class="btn btn-success btn-sm" role="modal-remote" title="แก้ไข"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                <a href="/app/settings/delete-sound?id=${row.sound_id}" class="btn btn-danger btn-sm" title="ลบ" data-method="post" data-pjax="0" data-confirm="คุณแน่ใจหรือไม่ที่จะลบรายการนี้?"><i class="fa fa-trash-o" aria-hidden="true"></i></a>`
+              }')
+            ]
         ],
+        'processing' => true,
+        'serverSide' => true,
+        'stateSave' => true,
+        'buttons' => [
+          'colvis',
+          'excel',
+          [
+            'text' => 'Reload',
+            'action' => new JsExpression('function ( e, dt, node, config ) {
+                dt.ajax.reload();
+            }')
+          ]
+        ],
+        "searchDelay" => 350,
     ],
     'clientEvents' => [
         'error.dt' => 'function ( e, settings, techNote, message ){

@@ -198,8 +198,8 @@ class SettingsController extends \yii\web\Controller
     public function actionDeleteCounter($id)
     {
         $request = Yii::$app->request;
-        TbCounterserviceType::findOne($id)->delete();
-        TbCounterservice::deleteAll(['counterservice_type' => $id]);
+        TbCounterservice::findOne($id)->delete();
+        // TbCounterservice::deleteAll(['counterservice_type' => $id]);
 
         if ($request->isAjax) {
             /*
@@ -310,6 +310,51 @@ class SettingsController extends \yii\web\Controller
     }
 
     public function actionIndex()
+    {
+        return $this->render('index');
+    }
+
+    public function actionService()
+    {
+        return $this->render('index');
+    }
+
+    public function actionFiles()
+    {
+        return $this->render('index');
+    }
+
+    public function actionSound()
+    {
+        return $this->render('index');
+    }
+
+    public function actionDisplay()
+    {
+        return $this->render('index');
+    }
+
+    public function actionCounter()
+    {
+        return $this->render('index');
+    }
+
+    public function actionTicket()
+    {
+        return $this->render('index');
+    }
+
+    public function actionServiceProfile()
+    {
+        return $this->render('index');
+    }
+
+    public function actionPlayer()
+    {
+        return $this->render('index');
+    }
+
+    public function actionConfigNotification()
     {
         return $this->render('index');
     }

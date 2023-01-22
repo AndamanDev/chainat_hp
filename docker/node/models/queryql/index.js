@@ -10,6 +10,14 @@ const QueueHoldQuerier = require('./queue-hold-querier')
 const QueueExWaitingQuerier = require('./ex-waiting-list-querier')
 const QueueExCallingQuerier = require('./ex-calling-liist-querier')
 const QueueExHoldQuerier = require('./ex-hold-list-querier')
+const SettingServiceGroupQuerier = require('./setting-service-group')
+const TbSoundQuerier = require('./sound-querier')
+const DisplayQuerier = require('./display-querier')
+const SettingCounterQuerier = require('./setting-counter-querier')
+const TicketQuerier = require('./ticket-querier')
+const ServiceProfileQuerier = require('./service-profile-querier')
+const SoundStationQuerier = require('./sound-station-querier')
+const CallingConfigQuerier = require('./calling-config-querier')
 
 module.exports = {
   ServiceQuerier,
@@ -23,5 +31,13 @@ module.exports = {
   QueueHoldQuerier,
   QueueExWaitingQuerier,
   QueueExCallingQuerier,
-  QueueExHoldQuerier
+  QueueExHoldQuerier,
+  SettingServiceGroupQuerier,
+  TbSoundQuerier,
+  DisplayQuerier,
+  SettingCounterQuerier,
+  TicketQuerier,
+  ServiceProfileQuerier,
+  SoundStationQuerier,
+  CallingConfigQuerier
 }

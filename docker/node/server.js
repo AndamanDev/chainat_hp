@@ -161,6 +161,7 @@ app.use("/api/dispensing", dispensingRouter);
 app.use("/api/kiosk", kioskRouter);
 app.use("/api/v1/calling", callingV1Router);
 app.use("/api/v1/examination", examinationV1Router);
+app.use("/api/v1/setting", require("./routes/v1/setting"));
 
 app.post("/api/send-message", async function (req, res) {
   try {

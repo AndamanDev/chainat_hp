@@ -187,7 +187,7 @@ class DefaultController extends Controller
                                 'status' => '200'
                             ];
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $transaction->rollBack();
                     }
                 }else{           
@@ -280,7 +280,7 @@ class DefaultController extends Controller
                                 'status' => '200'
                             ];
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $transaction->rollBack();
                     }
                 }else{           
@@ -646,7 +646,7 @@ class DefaultController extends Controller
                                 'status' => '200'
                             ];
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $transaction->rollBack();
                     }
                 }else{           
@@ -808,7 +808,7 @@ class DefaultController extends Controller
                                 'status' => '200'
                             ];
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $transaction->rollBack();
                     }
                 }else{           
@@ -955,7 +955,7 @@ class DefaultController extends Controller
                                 'status' => '200'
                             ];
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $transaction->rollBack();
                     }
                 }else{           
@@ -1051,7 +1051,7 @@ class DefaultController extends Controller
                                 'status' => '200'
                             ];
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $transaction->rollBack();
                     }
                 }else{

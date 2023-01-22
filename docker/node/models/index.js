@@ -12,6 +12,12 @@ const TbServiceProfile = require('./tb_service_profile')
 const User = require('./user')
 const TbCallingConfig = require('./tb_calling_config')
 const TbSound = require('./tb_sound')
+const SettingModel = require('./setting')
+const TbServiceType = require('./tb_service_type')
+const TbDisplay = require('./tb_display')
+const TbCounterServiceType = require('./tb_counterservice_type')
+const TbTicket = require('./tb_ticket')
+const TbSoundStation = require('./tb_sound_station')
 
 module.exports = {
   TbService,
@@ -27,5 +33,11 @@ module.exports = {
   TbServiceProfile,
   User,
   TbCallingConfig,
-  TbSound
+  TbSound,
+  SettingModel,
+  TbServiceType,
+  TbDisplay,
+  TbCounterServiceType,
+  TbTicket,
+  TbSoundStation
 }
