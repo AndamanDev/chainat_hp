@@ -200,7 +200,7 @@ CSS
                     <?php if (!$model->isNewRecord) { ?>
                         <?= Html::a('<i class="fa fa-trash" aria-hidden="true"></i> ลบ', ['/app/settings/delete-service-group', 'id' => $model['servicegroupid']], ['class' => 'btn btn-danger btn-delete']) ?>
                     <?php } ?>
-                    <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-primary']); ?>
+                    <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-success']); ?>
                 </div>
             </div>
         </div>

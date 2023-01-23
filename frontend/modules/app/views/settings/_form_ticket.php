@@ -6,6 +6,7 @@ use trntv\filekit\widget\Upload;
 use kartik\widgets\Select2;
 use yii\bootstrap\BootstrapAsset;
 use kartik\checkbox\CheckboxX;
+use kartik\widgets\SwitchInput;
 use yii\icons\Icon;
 use yii\web\JsExpression;
 
@@ -303,9 +304,17 @@ $this->registerCssFile("@web/css/80mm.css", [
 
     <?= Html::activeLabel($model, 'status', ['label' => 'สถานะการใช้งาน', 'class' => 'col-sm-2 control-label']) ?>
     <div class="col-sm-4">
-        <?= $form->field($model, 'status')->widget(CheckboxX::classname(), [
-            'pluginOptions' => ['threeState' => false]
-        ]) ?>
+        <?php
+        echo $form->field($model, 'status')->widget(SwitchInput::classname(), [
+          'pluginOptions' => [
+            // 'size' => 'mini',
+            'onColor' => 'success',
+            'offColor' => 'danger',
+            'onText' => 'ใช้งาน',
+            'offText' => 'ปิดใช้งาน',
+        ]
+        ]);
+        ?>
     </div>
 </div>
 
@@ -340,8 +349,8 @@ $this->registerCssFile("@web/css/80mm.css", [
 
 <div class="form-group">
     <div class="col-sm-12" style="text-align: right;">
-        <?= Html::button(Icon::show('close') . 'CLOSE', ['class' => 'btn btn-default', 'data-dismiss' => 'modal']); ?>
-        <?= Html::submitButton(Icon::show('save') . 'SAVE', ['class' => 'btn btn-primary']); ?>
+      <?= Html::button(Icon::show('close') . 'ปิด', ['class' => 'btn btn-danger', 'data-dismiss' => 'modal']); ?>
+      <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-success']); ?>
     </div>
 </div>
 <?php ActiveForm::end(); ?>

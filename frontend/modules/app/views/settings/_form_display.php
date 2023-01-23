@@ -6,8 +6,10 @@ use yii\icons\Icon;
 use kartik\widgets\Select2;
 use frontend\modules\app\models\TbService;
 use frontend\modules\app\models\TbCounterserviceType;
+use homer\duallistbox\DualListbox;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\ColorInput;
+use kartik\widgets\SwitchInput;
 
 $this->registerCss('
 .modal-dialog{
@@ -20,36 +22,36 @@ $this->registerCss('
 ?>
 
 <?php $form = ActiveForm::begin([
-	'id' => 'form-display', 'type' => ActiveForm::TYPE_HORIZONTAL,
-	'formConfig' => ['showLabels' => false],
+  'id' => 'form-display', 'type' => ActiveForm::TYPE_HORIZONTAL,
+  'formConfig' => ['showLabels' => false],
 ]); ?>
 <div class="form-group">
-	<?= Html::activeLabel($model, 'display_name', ['class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-4">
-		<?= $form->field($model, 'display_name', ['showLabels' => false])->textInput([]); ?>
-	</div>
+  <?= Html::activeLabel($model, 'display_name', ['class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'display_name', ['showLabels' => false])->textInput([]); ?>
+  </div>
 </div>
 
 <div class="form-group">
-	<?= Html::activeLabel($model, 'sound_station_id', ['label' => 'โปรแกรมเล่นเสียง', 'class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-4">
-		<?= $form->field($model, 'sound_station_id', ['showLabels' => false])->widget(Select2::classname(), [
-			'data' => ArrayHelper::map((new \yii\db\Query())
-				->select([
-					'tb_sound_station.sound_station_id',
-					'tb_sound_station.sound_station_name',
-					'tb_sound_station.counterserviceid',
-					'tb_sound_station.sound_station_status'
-				])
-				->from('tb_sound_station')
-				->all(), 'sound_station_id', 'sound_station_name'),
-			'options' => ['placeholder' => 'เลือกเครื่องเล่นเสียง...'],
-			'pluginOptions' => [
-				'allowClear' => true
-			],
-			'theme' => Select2::THEME_BOOTSTRAP,
-		]) ?>
-	</div>
+  <?= Html::activeLabel($model, 'sound_station_id', ['label' => 'โปรแกรมเล่นเสียง', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'sound_station_id', ['showLabels' => false])->widget(Select2::classname(), [
+      'data' => ArrayHelper::map((new \yii\db\Query())
+        ->select([
+          'tb_sound_station.sound_station_id',
+          'tb_sound_station.sound_station_name',
+          'tb_sound_station.counterserviceid',
+          'tb_sound_station.sound_station_status'
+        ])
+        ->from('tb_sound_station')
+        ->all(), 'sound_station_id', 'sound_station_name'),
+      'options' => ['placeholder' => 'เลือกเครื่องเล่นเสียง...'],
+      'pluginOptions' => [
+        'allowClear' => true
+      ],
+      'theme' => Select2::THEME_BOOTSTRAP,
+    ]) ?>
+  </div>
 </div>
 
 <?php /*
@@ -147,158 +149,238 @@ $this->registerCss('
 <?php
 $model->lab_display = $model->isNewRecord ? 0 : $model['lab_display'];
 ?>
+
+<?php /*
 <div class="form-group">
-	<?= Html::activeLabel($model, 'lab_display', ['class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-2">
-		<?= $form->field($model, 'lab_display', ['showLabels' => false])->RadioList(
-			[0 => 'No', 1 => 'Yes'],
-			[
-				'inline' => true,
-				'item' => function ($index, $label, $name, $checked, $value) {
+  <?= Html::activeLabel($model, 'lab_display', ['class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-2">
+    <?= $form->field($model, 'lab_display', ['showLabels' => false])->RadioList(
+      [0 => 'No', 1 => 'Yes'],
+      [
+        'inline' => true,
+        'item' => function ($index, $label, $name, $checked, $value) {
 
-					$return = '<div class="radio"><label style="font-size: 1em">';
-					$return .= Html::radio($name, $checked, ['value' => $value]);
-					$return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-					$return .= '</label></div>';
+          $return = '<div class="radio"><label style="font-size: 1em">';
+          $return .= Html::radio($name, $checked, ['value' => $value]);
+          $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
+          $return .= '</label></div>';
 
-					return $return;
-				}
-			]
-		); ?>
-	</div>
+          return $return;
+        }
+      ]
+    ); ?>
+  </div>
+</div>
+*/ ?>
+
+<div class="form-group">
+  <?= Html::activeLabel($model, 'pt_name', ['label' => 'แสดงชื่อผู้ป่วย', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-2">
+  <?php
+    echo $form->field($model, 'pt_name')->widget(SwitchInput::classname(), [
+      'pluginOptions' => [
+        // 'size' => 'mini',
+        'onColor' => 'success',
+        'offColor' => 'danger',
+        'onText' => 'แสดง',
+        'offText' => 'ไม่แสดง',
+    ]
+    ]);
+    ?>
+    <?php /*
+    <?= $form->field($model, 'pt_name', ['showLabels' => false])->RadioList(
+      [
+        0 => 'ไม่แสดง',
+        1 => 'แสดง'
+      ],
+      [
+        'inline' => true,
+        'item' => function ($index, $label, $name, $checked, $value) {
+
+          $return = '<div class="radio"><label style="font-size: 1em">';
+          $return .= Html::radio($name, $checked, ['value' => $value]);
+          $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
+          $return .= '</label></div>';
+
+          return $return;
+        }
+      ]
+    ); ?>
+    */ ?>
+  </div>
+
+  <?= Html::activeLabel($model, 'pt_pic', ['label' => 'แสดงภาพผู้ป่วย', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-2">
+  <?php
+    echo $form->field($model, 'pt_pic')->widget(SwitchInput::classname(), [
+      'pluginOptions' => [
+        // 'size' => 'mini',
+        'onColor' => 'success',
+        'offColor' => 'danger',
+        'onText' => 'แสดง',
+        'offText' => 'ไม่แสดง',
+    ]
+    ]);
+    ?>
+    <?php /*
+    <?= $form->field($model, 'pt_pic', ['showLabels' => false])->RadioList(
+      [
+        0 => 'ไม่แสดง',
+        1 => 'แสดง'
+      ],
+      [
+        'inline' => true,
+        'item' => function ($index, $label, $name, $checked, $value) {
+
+          $return = '<div class="radio"><label style="font-size: 1em">';
+          $return .= Html::radio($name, $checked, ['value' => $value]);
+          $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
+          $return .= '</label></div>';
+
+          return $return;
+        }
+      ]
+    ); ?>
+    */ ?>
+  </div>
 </div>
 
 <div class="form-group">
-	<?= Html::activeLabel($model, 'pt_name', ['label' => 'แสดงชื่อผู้ป่วย', 'class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-2">
-		<?= $form->field($model, 'pt_name', ['showLabels' => false])->RadioList(
-			[
-				0 => 'ไม่แสดง',
-				1 => 'แสดง'
-			],
-			[
-				'inline' => true,
-				'item' => function ($index, $label, $name, $checked, $value) {
-
-					$return = '<div class="radio"><label style="font-size: 1em">';
-					$return .= Html::radio($name, $checked, ['value' => $value]);
-					$return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-					$return .= '</label></div>';
-
-					return $return;
-				}
-			]
-		); ?>
-	</div>
-
-	<?= Html::activeLabel($model, 'pt_pic', ['label' => 'แสดงภาพผู้ป่วย', 'class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-2">
-		<?= $form->field($model, 'pt_pic', ['showLabels' => false])->RadioList(
-			[
-				0 => 'ไม่แสดง',
-				1 => 'แสดง'
-			],
-			[
-				'inline' => true,
-				'item' => function ($index, $label, $name, $checked, $value) {
-
-					$return = '<div class="radio"><label style="font-size: 1em">';
-					$return .= Html::radio($name, $checked, ['value' => $value]);
-					$return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-					$return .= '</label></div>';
-
-					return $return;
-				}
-			]
-		); ?>
-	</div>
+  <?= Html::activeLabel($model, 'display_limit', ['label' => 'จำนวนแถวที่แสดง', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-2">
+    <?= $form->field($model, 'display_limit', ['showLabels' => false])->textInput([]); ?>
+  </div>
 </div>
 
 <div class="form-group">
-	<?= Html::activeLabel($model, 'display_limit', ['label' => 'จำนวนแถวที่แสดง', 'class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-2">
-		<?= $form->field($model, 'display_limit', ['showLabels' => false])->textInput([]); ?>
-	</div>
+  <?= Html::activeLabel($model, 'counterservice_id', ['label' => 'ช่องบริการที่ต้องการแสดง', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-8">
+    <?php
+    echo $form->field($model, 'counterservice_id')->widget(DualListbox::className(), [
+      'items' => ArrayHelper::map(TbCounterserviceType::find()->asArray()->all(), 'counterservice_typeid', 'counterservice_type'),
+      'options' => [
+        'multiple' => true,
+        'size' => 20,
+      ],
+      'clientOptions' => [
+        'moveOnSelect' => false,
+        'selectorMinimalHeight' => 200,
+        'selectedListLabel' => 'รายการที่แสดงผล',
+        'nonSelectedListLabel' => 'รายการทั้งหมด'
+      ],
+    ]);
+    ?>
+    <?php /*
+    <?= $form->field($model, 'counterservice_id', ['showLabels' => false])->checkBoxList(
+      ArrayHelper::map(TbCounterserviceType::find()->asArray()->all(), 'counterservice_typeid', 'counterservice_type'),
+      [
+        'inline' => false,
+        'item' => function ($index, $label, $name, $checked, $value) {
+
+          $return = '<div class="checkbox"><label style="font-size: 1em">';
+          $return .= Html::checkbox($name, $checked, ['value' => $value]);
+          $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
+          $return .= '</label></div>';
+
+          return $return;
+        }
+      ]
+    ); ?>
+    */ ?>
+  </div>
+</div>
+<div class="form-group">
+  <?= Html::activeLabel($model, 'service_id', ['label' => 'กลุ่มบริการที่ต้องการแสดง', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-10">
+  <?php
+    echo $form->field($model, 'service_id')->widget(DualListbox::className(), [
+      'items' => ArrayHelper::map((new \yii\db\Query())
+      ->select(['tb_service.serviceid', 'CONCAT(tb_service.service_prefix,\': \', tb_service.service_name)  as service_name'])
+      ->from('tb_service')
+      ->where(['service_status' => 1])
+      ->all(), 'serviceid', 'service_name'),
+      'options' => [
+        'multiple' => true,
+        'size' => 20,
+      ],
+      'clientOptions' => [
+        'moveOnSelect' => false,
+        'selectorMinimalHeight' => 200,
+        'selectedListLabel' => 'รายการที่แสดงผล',
+        'nonSelectedListLabel' => 'รายการทั้งหมด'
+      ],
+    ]);
+    ?>
+    <?php /*
+    <?= $form->field($model, 'service_id', ['showLabels' => false])->checkBoxList(
+      ArrayHelper::map((new \yii\db\Query())
+        ->select(['tb_service.serviceid', 'CONCAT(tb_service.service_prefix,\': \', tb_service.service_name)  as service_name'])
+        ->from('tb_service')
+        ->where(['service_status' => 1])
+        ->all(), 'serviceid', 'service_name'),
+      [
+        'inline' => false,
+        'item' => function ($index, $label, $name, $checked, $value) {
+
+          $return = '<div class="checkbox"><label style="font-size: 1em">';
+          $return .= Html::checkbox($name, $checked, ['value' => $value]);
+          $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
+          $return .= '</label></div>';
+
+          return $return;
+        }
+      ]
+    ); ?>
+    */ ?>
+  </div>
 </div>
 
 <div class="form-group">
-	<?= Html::activeLabel($model, 'counterservice_id', ['label' => 'Counter', 'class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-4">
-		<?= $form->field($model, 'counterservice_id', ['showLabels' => false])->checkBoxList(
-			ArrayHelper::map(TbCounterserviceType::find()->asArray()->all(), 'counterservice_typeid', 'counterservice_type'),
-			[
-				'inline' => false,
-				'item' => function ($index, $label, $name, $checked, $value) {
+  <?= Html::activeLabel($model, 'display_status', ['label' => 'สถานะ', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?php
+    echo $form->field($model, 'display_status')->widget(SwitchInput::classname(), [
+      'pluginOptions' => [
+        // 'size' => 'mini',
+        'onColor' => 'success',
+        'offColor' => 'danger',
+        'onText' => 'ใช้งาน',
+        'offText' => 'ปิดใช้งาน',
+    ]
+    ]);
+    ?>
+    <?php /*
 
-					$return = '<div class="checkbox"><label style="font-size: 1em">';
-					$return .= Html::checkbox($name, $checked, ['value' => $value]);
-					$return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-					$return .= '</label></div>';
+    <?= $form->field($model, 'display_status', ['showLabels' => false])->RadioList(
+      [0 => 'Disabled', 1 => 'Enabled'],
+      [
+        'inline' => true,
+        'item' => function ($index, $label, $name, $checked, $value) {
 
-					return $return;
-				}
-			]
-		); ?>
-	</div>
-</div>
-<div class="form-group">
-	<?= Html::activeLabel($model, 'service_id', ['label' => 'กลุ่มบริการ', 'class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-10">
-		<?= $form->field($model, 'service_id', ['showLabels' => false])->checkBoxList(
-			ArrayHelper::map((new \yii\db\Query())
-				->select(['tb_service.serviceid', 'CONCAT(tb_service.service_prefix,\': \', tb_service.service_name)  as service_name'])
-				->from('tb_service')
-				->where(['service_status' => 1])
-				->all(), 'serviceid', 'service_name'),
-			[
-				'inline' => false,
-				'item' => function ($index, $label, $name, $checked, $value) {
+          $return = '<div class="radio"><label style="font-size: 1em">';
+          $return .= Html::radio($name, $checked, ['value' => $value]);
+          $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
+          $return .= '</label></div>';
 
-					$return = '<div class="checkbox"><label style="font-size: 1em">';
-					$return .= Html::checkbox($name, $checked, ['value' => $value]);
-					$return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-					$return .= '</label></div>';
-
-					return $return;
-				}
-			]
-		); ?>
-	</div>
+          return $return;
+        }
+      ]
+    ); ?>
+    */ ?>
+  </div>
 </div>
 
 <div class="form-group">
-	<?= Html::activeLabel($model, 'display_status', ['label' => 'สถานะ', 'class' => 'col-sm-2 control-label']) ?>
-	<div class="col-sm-4">
-
-		<?= $form->field($model, 'display_status', ['showLabels' => false])->RadioList(
-			[0 => 'Disabled', 1 => 'Enabled'],
-			[
-				'inline' => true,
-				'item' => function ($index, $label, $name, $checked, $value) {
-
-					$return = '<div class="radio"><label style="font-size: 1em">';
-					$return .= Html::radio($name, $checked, ['value' => $value]);
-					$return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-					$return .= '</label></div>';
-
-					return $return;
-				}
-			]
-		); ?>
-	</div>
-</div>
-
-<div class="form-group">
-	<div class="col-sm-12" style="text-align: right;">
-		<?= Html::button(Icon::show('close') . 'CLOSE', ['class' => 'btn btn-default', 'data-dismiss' => 'modal']); ?>
-		<?= Html::submitButton(Icon::show('save') . 'SAVE', ['class' => 'btn btn-primary']); ?>
-	</div>
+  <div class="col-sm-12" style="text-align: right;">
+    <?= Html::button(Icon::show('close') . 'ปิด', ['class' => 'btn btn-danger', 'data-dismiss' => 'modal']); ?>
+    <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-success']); ?>
+  </div>
 </div>
 <?php ActiveForm::end(); ?>
 
 <?php
 $this->registerJs(
-	<<<JS
+  <<<JS
 var table = $('#tb-display').DataTable();
 var \$form = $('#form-display');
 \$form.on('beforeSubmit', function() {

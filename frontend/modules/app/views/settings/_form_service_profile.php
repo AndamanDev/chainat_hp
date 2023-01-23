@@ -7,8 +7,10 @@ use yii\icons\Icon;
 use kartik\widgets\Select2;
 use frontend\modules\app\models\TbService;
 use frontend\modules\app\models\TbCounterserviceType;
+use homer\duallistbox\DualListbox;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\ColorInput;
+use kartik\widgets\SwitchInput;
 
 $this->registerCss('
 .modal-dialog{
@@ -21,48 +23,51 @@ $this->registerCss('
 ?>
 
 <?php $form = ActiveForm::begin([
-    'id' => 'form-service-profile', 'type' => ActiveForm::TYPE_HORIZONTAL,
-    'formConfig' => ['showLabels' => false],
+  'id' => 'form-service-profile', 'type' => ActiveForm::TYPE_HORIZONTAL,
+  'formConfig' => ['showLabels' => false],
 ]); ?>
-    <div class="form-group">
-        <?= Html::activeLabel($model, 'service_name', ['label' => 'Profile Name', 'class' => 'col-sm-2 control-label']) ?>
-        <div class="col-sm-4">
-            <?= $form->field($model, 'service_name', ['showLabels' => false])->textInput([]); ?>
-        </div>
-    </div>
+<div class="form-group">
+  <?= Html::activeLabel($model, 'service_name', ['label' => 'ชื่อ', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'service_name', ['showLabels' => false])->textInput([]); ?>
+  </div>
+</div>
 
-    <div class="form-group">
-        <?= Html::activeLabel($model, 'counterservice_typeid', ['label' => 'Counter', 'class' => 'col-sm-2 control-label']) ?>
-        <div class="col-sm-4">
-            <?= $form->field($model, 'counterservice_typeid', ['showLabels' => false])->widget(Select2::classname(), [
-                'data' => ArrayHelper::map(TbCounterserviceType::find()->asArray()->all(), 'counterservice_typeid', 'counterservice_type'),
-                'options' => ['placeholder' => 'Select a state ...'],
-                'pluginOptions' => [
-                    'allowClear' => true
-                ],
-                'theme' => Select2::THEME_BOOTSTRAP,
-            ]); ?>
-        </div>
-    </div>
+<div class="form-group">
+  <?= Html::activeLabel($model, 'counterservice_typeid', ['label' => 'ช่องบริการที่ต้องการเรียกคิว', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'counterservice_typeid', ['showLabels' => false])->widget(Select2::classname(), [
+      'data' => ArrayHelper::map(TbCounterserviceType::find()->asArray()->all(), 'counterservice_typeid', 'counterservice_type'),
+      'options' => ['placeholder' => 'Select a state ...'],
+      'pluginOptions' => [
+        'allowClear' => true
+      ],
+      'theme' => Select2::THEME_BOOTSTRAP,
+    ]); ?>
+  </div>
+</div>
 
-    <div class="form-group">
-        <?= Html::activeLabel($model, 'service_id', ['label' => 'กลุ่มบริการย่อย', 'class' => 'col-sm-2 control-label']) ?>
-        <div class="col-sm-10">
-            <?= $form->field($model, 'service_id', ['showLabels' => false])->checkBoxList(ArrayHelper::map(TbService::find()->where(['service_status' => 1])->asArray()->all(), 'serviceid', 'service_name'), [
-                'inline' => false,
-                'item' => function ($index, $label, $name, $checked, $value) {
-
-                    $return = '<div class="checkbox"><label style="font-size: 1em">';
-                    $return .= Html::checkbox($name, $checked, ['value' => $value]);
-                    $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-                    $return .= '</label></div>';
-
-                    return $return;
-                }
-            ]); ?>
-        </div>
-    </div>
-  <?php /*
+<div class="form-group">
+  <?= Html::activeLabel($model, 'service_id', ['label' => 'กลุ่มบริการที่ต้องการเรียกคิว', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-10">
+    <?php
+    echo $form->field($model, 'service_id')->widget(DualListbox::className(), [
+      'items' => ArrayHelper::map(TbService::find()->where(['service_status' => 1])->asArray()->all(), 'serviceid', 'service_name'),
+      'options' => [
+        'multiple' => true,
+        'size' => 20,
+      ],
+      'clientOptions' => [
+        'moveOnSelect' => false,
+        'selectorMinimalHeight' => 200,
+        'selectedListLabel' => 'รายการที่เลือก',
+        'nonSelectedListLabel' => 'รายการทั้งหมด'
+      ],
+    ]);
+    ?>
+  </div>
+</div>
+<?php /*
     <div class="form-group">
         <?= Html::activeLabel($model, 'counter_service_ids', ['class' => 'col-sm-2 control-label']) ?>
         <div class="col-sm-10">
@@ -106,32 +111,36 @@ $this->registerCss('
             ]) ?>
         </div>
     </div>
-    */?>
+    */ ?>
 
-    <div class="form-group">
-        <?= Html::activeLabel($model, 'service_profile_status', ['label' => 'สถานะ', 'class' => 'col-sm-2 control-label']) ?>
-        <div class="col-sm-4">
-            <?= $form->field($model, 'service_profile_status', ['showLabels' => false])->widget(Select2::classname(), [
-                'data' => [0 => 'Disabled', 1 => 'Enabled'],
-                'options' => ['placeholder' => 'สถานะ...'],
-                'pluginOptions' => [
-                    'allowClear' => true
-                ],
-                'theme' => Select2::THEME_BOOTSTRAP,
-            ]) ?>
-        </div>
-    </div>
+<div class="form-group">
+  <?= Html::activeLabel($model, 'service_profile_status', ['label' => 'สถานะ', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?php
+    echo $form->field($model, 'service_profile_status')->widget(SwitchInput::classname(), [
+      'pluginOptions' => [
+        // 'size' => 'mini',
+        'onColor' => 'success',
+        'offColor' => 'danger',
+        'onText' => 'ใช้งาน',
+        'offText' => 'ปิดใช้งาน',
+      ]
+    ]);
+    ?>
+  </div>
+</div>
 
-    <div class="form-group">
-        <div class="col-sm-12" style="text-align: right;">
-            <?= Html::button(Icon::show('close') . 'CLOSE', ['class' => 'btn btn-default', 'data-dismiss' => 'modal']); ?>
-            <?= Html::submitButton(Icon::show('save') . 'SAVE', ['class' => 'btn btn-primary']); ?>
-        </div>
-    </div>
+<div class="form-group">
+  <div class="col-sm-12" style="text-align: right;">
+    <?= Html::button(Icon::show('close') . 'ปิด', ['class' => 'btn btn-danger', 'data-dismiss' => 'modal']); ?>
+    <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-success']); ?>
+  </div>
+</div>
 <?php ActiveForm::end(); ?>
 
 <?php
-$this->registerJs(<<<JS
+$this->registerJs(
+  <<<JS
 var table = $('#tb-service-profile').DataTable();
 var \$form = $('#form-service-profile');
 \$form.on('beforeSubmit', function() {

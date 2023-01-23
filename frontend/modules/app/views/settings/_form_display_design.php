@@ -474,10 +474,10 @@ $bundle->js[] = 'vendor/iCheck/icheck.min.js';
 
 	<div class="form-group">
         <div class="col-sm-8" style="text-align:right;">
-            <?= Html::a('CLOSE',['/app/settings/index'],['class' => 'btn btn-default']); ?>
-            <?= Html::a('Reset',['/app/settings/update-display','id' => $model['display_ids']],['class' => 'btn btn-danger']); ?>
-            <?= Html::submitButton('Preview',['class' => 'btn btn-primary']); ?>
-            <?= Html::button('SAVE',['class' => 'btn btn-success btn-save']); ?>
+            <?= Html::a('ปิด',['/app/settings/index'],['class' => 'btn btn-default']); ?>
+            <?= Html::a('รีเซ็ต',['/app/settings/update-display','id' => $model['display_ids']],['class' => 'btn btn-danger']); ?>
+            <?= Html::submitButton('ดูตัวอย่าง',['class' => 'btn btn-primary']); ?>
+            <?= Html::button('บันทึก',['class' => 'btn btn-success btn-save']); ?>
         </div>
     </div>
 <?php ActiveForm::end(); ?>

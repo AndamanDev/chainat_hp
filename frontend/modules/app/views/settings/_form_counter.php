@@ -239,8 +239,8 @@ CSS
         <div class="col-xs-12 col-sm-12 col-md-12" style="text-align: right;">
             <div class="form-group">
                 <div class="col-sm-12">
-                    <?= Html::button(Icon::show('close').'CLOSE',['class' => 'btn btn-default','data-dismiss' => 'modal']); ?>
-                    <?= Html::submitButton(Icon::show('save').'SAVE',['class' => 'btn btn-primary']); ?>
+                  <?= Html::button(Icon::show('close') . 'ปิด', ['class' => 'btn btn-danger', 'data-dismiss' => 'modal']); ?>
+                  <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-success']); ?>
                 </div>
             </div>
         </div>

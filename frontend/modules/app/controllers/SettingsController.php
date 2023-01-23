@@ -311,7 +311,8 @@ class SettingsController extends \yii\web\Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->redirect(['service']);
+        // return $this->render('index');
     }
 
     public function actionService()

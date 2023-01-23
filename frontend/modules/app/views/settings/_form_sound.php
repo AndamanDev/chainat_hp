@@ -1,57 +1,60 @@
 <?php
+
 use kartik\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\icons\Icon;
 use kartik\select2\Select2;
 
-$this->registerCss(<<<CSS
+$this->registerCss(
+  <<<CSS
 .modal-dialog{
     width: 90%;
 }
 CSS
 );
 ?>
-<?php $form = ActiveForm::begin(['type'=>ActiveForm::TYPE_HORIZONTAL,'id' => 'form-sound']); ?>
+<?php $form = ActiveForm::begin(['type' => ActiveForm::TYPE_HORIZONTAL, 'id' => 'form-sound']); ?>
 <div class="form-group">
-    <?= Html::activeLabel($model, 'sound_name', ['label'=>'ชื่อไฟล์', 'class'=>'col-sm-2 control-label']) ?>
-    <div class="col-sm-4">
-        <?= $form->field($model, 'sound_name',['showLabels'=>false])->textInput(['placeholder'=>'ชื่อไฟล์']); ?>
-    </div>
+  <?= Html::activeLabel($model, 'sound_name', ['label' => 'ชื่อไฟล์', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'sound_name', ['showLabels' => false])->textInput(['placeholder' => 'ชื่อไฟล์']); ?>
+  </div>
 
-    <?= Html::activeLabel($model, 'sound_path_name', ['label'=>'โฟรเดอร์ไฟล์', 'class'=>'col-sm-1 control-label']) ?>
-    <div class="col-sm-4">
-        <?= $form->field($model, 'sound_path_name',['showLabels'=>false])->textInput(['placeholder'=>'โฟรเดอร์ไฟล์']); ?>
-    </div>
+  <?= Html::activeLabel($model, 'sound_path_name', ['label' => 'โฟรเดอร์ไฟล์', 'class' => 'col-sm-1 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'sound_path_name', ['showLabels' => false])->textInput(['placeholder' => 'โฟรเดอร์ไฟล์']); ?>
+  </div>
 </div>
 <div class="form-group">
-    <?= Html::activeLabel($model, 'sound_th', ['label'=>'เสียงเรียก', 'class'=>'col-sm-2 control-label']) ?>
-    <div class="col-sm-4">
-        <?= $form->field($model, 'sound_th',['showLabels'=>false])->textInput(['placeholder'=>'เสียงเรียก']); ?>
-    </div>
+  <?= Html::activeLabel($model, 'sound_th', ['label' => 'เสียงเรียก', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'sound_th', ['showLabels' => false])->textInput(['placeholder' => 'เสียงเรียก']); ?>
+  </div>
 
-    <?= Html::activeLabel($model, 'sound_type', ['label'=>'ประเภทเสียง', 'class'=>'col-sm-1 control-label']) ?>
-    <div class="col-sm-4">
-        <?= $form->field($model, 'sound_type',['showLabels'=>false])->widget(Select2::classname(), [
-		    'data' => [1 => 'เสียงผู้หญิง', 2 => 'เสียงผู้ชาย'],
-		    'language' => 'de',
-		    'options' => ['placeholder' => 'ประเภทเสียง'],
-		    'pluginOptions' => [
-		        'allowClear' => true
-		    ],
-		    'theme' => Select2::THEME_BOOTSTRAP,
-		]); ?>
-    </div>
+  <?= Html::activeLabel($model, 'sound_type', ['label' => 'ประเภทเสียง', 'class' => 'col-sm-1 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'sound_type', ['showLabels' => false])->widget(Select2::classname(), [
+      'data' => [1 => 'เสียงผู้หญิง', 2 => 'เสียงผู้ชาย'],
+      'language' => 'de',
+      'options' => ['placeholder' => 'ประเภทเสียง'],
+      'pluginOptions' => [
+        'allowClear' => true
+      ],
+      'theme' => Select2::THEME_BOOTSTRAP,
+    ]); ?>
+  </div>
 </div>
 <div class="form-group">
-    <div class="col-sm-12" style="text-align: right;">
-        <?= Html::button(Icon::show('close').'CLOSE',['class' => 'btn btn-default','data-dismiss' => 'modal']); ?>
-        <?= Html::submitButton(Icon::show('save').'SAVE',['class' => 'btn btn-primary']); ?>
-    </div>
+  <div class="col-sm-12" style="text-align: right;">
+    <?= Html::button(Icon::show('close') . 'ปิด', ['class' => 'btn btn-danger', 'data-dismiss' => 'modal']); ?>
+    <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-success']); ?>
+  </div>
 </div>
 <?php ActiveForm::end(); ?>
 
 <?php
-$this->registerJs(<<<JS
+$this->registerJs(
+  <<<JS
 //Form Event
 var table = $('#tb-sound').DataTable();
 var \$form = $('#form-sound');

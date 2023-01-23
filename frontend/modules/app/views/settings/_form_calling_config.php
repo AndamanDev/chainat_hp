@@ -3,51 +3,50 @@
 use yii\helpers\Html;
 use kartik\form\ActiveForm;
 use kartik\checkbox\CheckboxX;
+use kartik\widgets\SwitchInput;
 use yii\icons\Icon;
 ?>
 <?php $form = ActiveForm::begin([
-    'id' => 'form-calling-config', 'type' => ActiveForm::TYPE_HORIZONTAL,
-    'formConfig' => ['showLabels' => false],
+  'id' => 'form-calling-config', 'type' => ActiveForm::TYPE_HORIZONTAL,
+  'formConfig' => ['showLabels' => false],
 ]); ?>
 <div class="form-group">
-    <?= Html::activeLabel($model, 'notice_queue', ['label' => 'จำนวนคิว', 'class' => 'col-sm-2 control-label']) ?>
-    <div class="col-sm-4">
-        <?= $form->field($model, 'notice_queue', ['showLabels' => false])->textInput([
-            'placeholder' => 'จำนวนคิวที่แจ้งเตือน'
-        ]); ?>
-    </div>
-   
+  <?= Html::activeLabel($model, 'notice_queue', ['label' => 'จำนวนคิว', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?= $form->field($model, 'notice_queue', ['showLabels' => false])->textInput([
+      'placeholder' => 'จำนวนคิวที่แจ้งเตือน'
+    ]); ?>
+  </div>
+
 </div>
 <div class="form-group">
-<?= Html::activeLabel($model, 'notice_queue_status', ['label' => 'สถานะการใช้งาน', 'class' => 'col-sm-2 control-label']) ?>
-    <div class="col-sm-4">
-    <?= $form->field($model, 'notice_queue_status', ['showLabels' => false])->RadioList(
-            [0 => 'No', 1 => 'Yes'],
-            [
-                'inline' => true,
-                'item' => function ($index, $label, $name, $checked, $value) {
-                    $return = '<div class="radio"><label style="font-size: 1em">';
-                    $return .= Html::radio($name, $checked, ['value' => $value]);
-                    $return .= '<span class="cr"><i class="cr-icon cr-icon glyphicon glyphicon-ok"></i></span>' . ucwords($label);
-                    $return .= '</label></div>';
-                    return $return;
-                }
-            ]
-        );
-        ?>
-    </div>
+  <?= Html::activeLabel($model, 'notice_queue_status', ['label' => 'สถานะการใช้งาน', 'class' => 'col-sm-2 control-label']) ?>
+  <div class="col-sm-4">
+    <?php
+    echo $form->field($model, 'notice_queue_status')->widget(SwitchInput::classname(), [
+      'pluginOptions' => [
+        // 'size' => 'mini',
+        'onColor' => 'success',
+        'offColor' => 'danger',
+        'onText' => 'ใช้งาน',
+        'offText' => 'ปิดใช้งาน',
+      ]
+    ]);
+    ?>
+  </div>
 </div>
 <div class="form-group">
-    <div class="col-sm-12" style="text-align: right;">
-        <?= Html::button(Icon::show('close') . 'CLOSE', ['class' => 'btn btn-default', 'data-dismiss' => 'modal']); ?>
-        <?= Html::submitButton(Icon::show('save') . 'SAVE', ['class' => 'btn btn-primary']); ?>
-    </div>
+  <div class="col-sm-12" style="text-align: right;">
+    <?= Html::button(Icon::show('close') . 'ปิด', ['class' => 'btn btn-danger', 'data-dismiss' => 'modal']); ?>
+    <?= Html::submitButton(Icon::show('save') . 'บันทึก', ['class' => 'btn btn-success']); ?>
+  </div>
 </div>
 <?php ActiveForm::end(); ?>
 
 
 <?php
-$this->registerJs(<<<JS
+$this->registerJs(
+  <<<JS
 var table = $('#tb-calling-config').DataTable();
 var \$form = $('#form-calling-config');
 \$form.on('beforeSubmit', function() {
