@@ -5317,4 +5317,26 @@ class CallingController extends \yii\web\Controller
       return $this->refresh();
     }
   }
+
+  public function actionV2() {
+    return $this->render('v2');
+  }
+
+  public function actionConfig()
+    {
+        $user = Yii::$app->user->identity;
+        $profile = $user->profile;
+        $auth = Yii::$app->authManager;
+        $roles = $auth->getRolesByUser(Yii::$app->user->id);
+        $roles = array_values(ArrayHelper::getColumn($roles, 'name'));
+
+        return $this->asJson([
+            'auth_key' => $user->auth_key,
+            'user' => [
+                'user_id'  => $user->id,
+                'roles' => $roles
+            ],
+            'profile' => $profile,
+        ]);
+    }
 }

@@ -120,6 +120,9 @@ exports.mapParams = (query) => {
       params['page'] = page
     }
   }
+  if(query.sort) {
+    sort = _.assign(sort, query.sort)
+  }
   if (sort) {
     params['sort'] = sort
   }

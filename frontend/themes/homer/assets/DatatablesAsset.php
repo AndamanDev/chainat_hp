@@ -27,6 +27,6 @@ class DatatablesAsset extends AssetBundle
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
         'yii\bootstrap\BootstrapPluginAsset',
-        'homer\assets\SweetAlert2Asset'
+        // 'homer\assets\SweetAlert2Asset'
     ];
 }
