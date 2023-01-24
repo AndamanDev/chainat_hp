@@ -131,26 +131,26 @@ exports.postCreateQueue = async (req, res) => {
         prefix: service_prefix,
         digit: service_numdigit
       })
+      
+      // save last queue
+      const lastqueuevalues = TbLastQueue.schemas().validateSync({
+        id: _.get(lastQueue, 'id', null),
+        queue_no: q_num,
+        queue_date: moment().format('YYYY-MM-DD'),
+        service_id: serviceid,
+        next_queue_no: this.generateQueueNumber({
+          lastnum: q_num,
+          prefix: service_prefix,
+          digit: service_numdigit
+        })
+      })
+      await new TbLastQueue(lastqueuevalues).save()
     } else {
       modelCaller = await TbCaller.findOne({ q_ids: _.get(modelQueue, 'q_ids', null) })
       maininscl_name = _.get(modelQueue, 'maininscl_name')
       u_id = _.get(modelQueue, 'u_id')
       tslotid = _.get(modelQueue, 'tslotid')
     }
-
-    // save last queue
-    const lastqueuevalues = TbLastQueue.schemas().validateSync({
-      id: _.get(lastQueue, 'id', null),
-      queue_no: q_num,
-      queue_date: moment().format('YYYY-MM-DD'),
-      service_id: serviceid,
-      next_queue_no: this.generateQueueNumber({
-        lastnum: q_num,
-        prefix: service_prefix,
-        digit: service_numdigit
-      })
-    })
-    await new TbLastQueue(lastqueuevalues).save()
 
     let attributes = {
       q_ids: _.get(modelQueue, 'q_ids', null),
