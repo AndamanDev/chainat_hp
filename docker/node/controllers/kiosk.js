@@ -16,6 +16,8 @@ exports.postCreateQueue = async (req, res) => {
   let trx = null
   try {
     const body = req.body
+    req.log.info(`[CreateQueue]:${_.get(body, 'patient_info.hn')}`)
+    req.log.info(body)
     req.assert(body.patient_info, 400, `invalid patient_info.`)
     req.assert(body.servicegroupid, 400, `invalid servicegroupid.`)
     req.assert(body.serviceid, 400, `invalid serviceid.`)
