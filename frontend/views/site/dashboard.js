@@ -193,7 +193,7 @@ var app = new Vue({
     })
 
     _this.getServices()
-    _this.getQueues()
+    // _this.getQueues()
 
     socket.on('register', (res) => {
       _this.getQueues()
@@ -399,4 +399,8 @@ var app = new Vue({
       })
     }
   },
+})
+
+$('#btn-submit').on('click', function(){
+  app.getQueues()
 })

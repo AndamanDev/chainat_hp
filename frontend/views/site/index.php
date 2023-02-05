@@ -37,7 +37,8 @@ $this->registerJs('var accesstoken = ' . Json::encode(Yii::$app->user->identity-
   <div class="panel-body" style="background-color: #fff">
     <form>
       <div class="form-group row">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
           <label class="col-sm-2 control-label">งานบริการ</label>
 
           <div class="col-sm-10">
@@ -49,7 +50,9 @@ $this->registerJs('var accesstoken = ' . Json::encode(Yii::$app->user->identity-
             </select>
           </div>
         </div>
-
+        <div class="col-md-3">
+          <button type="button" id="btn-submit" class="btn btn-success">แสดงข้อมูล</button>
+        </div>
       </div>
     </form>
   </div>
