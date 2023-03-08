@@ -191,7 +191,7 @@ class QueueModel {
       .leftJoin('tb_service_status', 'tb_service_status.service_status_id', 'tb_qtrans.service_status_id')
       .leftJoin('tb_service', 'tb_service.serviceid', 'tb_quequ.serviceid')
       .whereIn('tb_quequ.serviceid', serviceids)
-      .whereIn('tb_qtrans.service_status_id', [1, 11, 12, 13])
+      .whereIn('tb_qtrans.service_status_id', [1, 5, 11, 12, 13])
       .whereRaw('tb_quequ.queue_date = ?', [moment().format('YYYY-MM-DD')])
       .orderBy('tb_quequ.quickly', 'desc')
   }

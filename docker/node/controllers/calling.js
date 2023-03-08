@@ -19,7 +19,6 @@ exports.getQueueWaitingList = async (req, res) => {
     let params = _.assign(req.body, req.query)
     params = this.mapParams(params)
     
-
     const querier = new QueueWaitingQuerier(params, TbQueue.getDataWaiting(serviceids))
     const response = await querier.run()
     res.send({
@@ -84,6 +83,10 @@ exports.mapParams = (query) => {
   let params = {}
   let filter = {}
   let sort = {}
+
+  if(_.get(query, 'filter')) {
+    filter = query.filter
+  }
 
   if (columns) {
     for (let i = 0; i < columns.length; i++) {
