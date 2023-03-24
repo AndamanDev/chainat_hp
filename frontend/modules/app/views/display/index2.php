@@ -704,13 +704,28 @@ var app = new Vue({
                     thold.ajax.reload();//โหลดข้อมูลคิวพัก
                 }
             }).on('finish', (res) => {
-                if(myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0) {
-                    _this.qlist = _this.qlist.filter(row => parseInt(row.caller_ids) !== parseInt(res.modelCaller.caller_ids))
-                }
-                if( jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1 &&  myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0) {
-                    tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
-                    thold.ajax.reload();//โหลดข้อมูลคิวพัก
-                }
+              const media = $(jPlayerid).data().jPlayer.status.media;
+              let isPlay = false;
+              if (
+                _.get(media, "artist.modelCaller", null) &&
+                parseInt(media.artist.modelCaller.caller_ids) === parseInt(res.modelCaller.caller_ids)
+              ) {
+                isPlay = $(jPlayerid).data().jPlayer.status.paused === false;
+              }
+              if (isPlay) {
+                setTimeout(() => {
+                  _this.qlist = _this.qlist.filter(row => parseInt(row.caller_ids) !== parseInt(res.modelCaller.caller_ids))
+                  tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
+                  thold.ajax.reload();//โหลดข้อมูลคิวพัก
+                }, 8000);
+              }
+              if(myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0) {
+                  _this.qlist = _this.qlist.filter(row => parseInt(row.caller_ids) !== parseInt(res.modelCaller.caller_ids))
+              }
+              if( jQuery.inArray((res.modelQueue.serviceid).toString(), config.service_id) != -1 && jQuery.inArray((res.counter.counterservice_type).toString(), config.counterservice_id) != -1 &&  myPlaylist.playlist.filter(r => r.title === res.modelQueue.q_num).length === 0) {
+                  tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
+                  thold.ajax.reload();//โหลดข้อมูลคิวพัก
+              }
             }).on('display', (res) => {
                 if(Display.checkService(res)) {
                     tlastq.ajax.reload();//โหลดข้อมูลคิวล่าสุด
